@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.StuListActivity"
+    android:orientation="vertical">
+
+
+
+    <TextView
+        android:id="@+id/class_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="班级"
+        android:gravity="center"
+        android:textSize="26dp"/>
+
+    <include
+        layout="@layout/stu_list_top_item"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/stu_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        ></android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>
