@@ -64,7 +64,6 @@ class MainActivity : AppCompatActivity() {
     fun unCheckAll(po: Int){
         tabhost.currentTab = po
         for(i in (0..(tabhost.tabWidget.childCount-1))){
-            var v = tabhost.tabWidget.getChildAt(i)
             var text = tabhost.tabWidget.getChildAt(i).find<TextView>(R.id.tab_text)
             var img = tabhost.tabWidget.getChildAt(i).find<ImageView>(R.id.tab_img)
             if(po == i){
