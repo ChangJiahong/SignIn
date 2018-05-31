@@ -41,7 +41,7 @@ class StuListActivity : AppCompatActivity() {
 
 
         for(i in (1..60)){
-            data.add(StudentInfo(i.toString(),"庄三".plus(i),"dao"))
+            data.add(StudentInfo(i.toString(),"庄三".plus(i),"",""))
 
         }
 

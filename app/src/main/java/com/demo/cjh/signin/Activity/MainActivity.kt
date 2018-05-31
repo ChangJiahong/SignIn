@@ -37,15 +37,15 @@ class MainActivity : AppCompatActivity() {
         bundle.putString("tag",TAG)
         tabhost.setup(this,supportFragmentManager,R.id.realtabcontent)
 
-        tabhost.addTab(getTabView(R.string.tab_first,R.drawable.tab_1_selector),MenuFragment::class.java,bundle)
-        tabhost.addTab(getTabView(R.string.tab_second,R.drawable.tab_2_selector),FileFragment::class.java,bundle)
-        tabhost.addTab(getTabView(R.string.tab_third,R.drawable.tab_3_selector),MyFragment::class.java,bundle)
+        tabhost.addTab(getTabView(R.string.tab_first,R.drawable.tab1_1),MenuFragment::class.java,bundle)
+        tabhost.addTab(getTabView(R.string.tab_second,R.drawable.tab2_1),FileFragment::class.java,bundle)
+        tabhost.addTab(getTabView(R.string.tab_third,R.drawable.tab3_1),MyFragment::class.java,bundle)
         tabhost.tabWidget.showDividers = LinearLayout.SHOW_DIVIDER_NONE
-        tabhost.tabWidget.getChildTabViewAt(0).setOnClickListener {
-            unCheckAll(0)
-        }
-        tabhost.tabWidget.getChildTabViewAt(1).setOnClickListener { unCheckAll(1) }
-        tabhost.tabWidget.getChildTabViewAt(2).setOnClickListener { unCheckAll(2) }
+        // 初始化按钮
+        check(0)
+        tabhost.tabWidget.getChildTabViewAt(0).setOnClickListener { check(0) }
+        tabhost.tabWidget.getChildTabViewAt(1).setOnClickListener { check(1) }
+        tabhost.tabWidget.getChildTabViewAt(2).setOnClickListener { check(2) }
 
     }
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         return spec
     }
 
-    fun unCheckAll(po: Int){
+    fun check(po: Int){
         tabhost.currentTab = po
         for(i in (0..(tabhost.tabWidget.childCount-1))){
             var text = tabhost.tabWidget.getChildAt(i).find<TextView>(R.id.tab_text)
