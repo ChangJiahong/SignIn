@@ -14,4 +14,6 @@
 
     <color name="checked">#948383</color>
     <color name="unchecked">#fff</color>
+
+    <color name="red">#b34040</color>
 </resources>
