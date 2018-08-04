@@ -1,33 +1,28 @@
 package com.demo.cjh.signin.Activity
 
-import android.app.ActionBar
 import android.app.AlertDialog
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import com.demo.cjh.signin.*
 import com.demo.cjh.signin.Adapter.StuAdapter
+import com.demo.cjh.signin.FileUtil
+import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.`object`.TableInfo
+import com.demo.cjh.signin.util.getDirPath
+import com.demo.cjh.signin.util.getFileName
+import com.demo.cjh.signin.util.getSuffex
+import com.demo.cjh.signin.util.getValue
 import kotlinx.android.synthetic.main.activity_table2.*
-import kotlinx.android.synthetic.main.activity_table2_item.view.*
-import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.jetbrains.anko.*
 import java.io.File
-import java.net.URI
-import java.util.zip.Inflater
 
 /**
  * 查看数据页面 默认打开第一个日期的状态
@@ -122,7 +117,7 @@ class Table2Activity : AppCompatActivity() {
     }
 
 
-    fun readExcel(file: File): TableInfo{
+    fun readExcel(file: File): TableInfo {
         var tableInfo = TableInfo()
         var inputStream = file.inputStream()
         var workbook = WorkbookFactory.create(inputStream)
@@ -152,9 +147,9 @@ class Table2Activity : AppCompatActivity() {
                 tableInfo.data.add(rowData)
             }
 
-            tableInfo.status = true
+            tableInfo.status = 0
         }else{
-            tableInfo.status = false
+            tableInfo.status = 1
         }
 
         return tableInfo
@@ -178,7 +173,7 @@ class Table2Activity : AppCompatActivity() {
 
         override fun onPostExecute(result: TableInfo?) {
             super.onPostExecute(result)
-            if(result!!.status){
+            if(result!!.status == 0){
 
                 titleData.clear()
                 for(da in result.title){
@@ -221,10 +216,10 @@ class Table2Activity : AppCompatActivity() {
         for(i in (0..(contentData.size-1))){
             // index+2 -> 读取数据的时候去掉了表头 在获取type需要+2保持一致
             try {
-                stuData.add(StudentInfo(contentData[i][0],contentData[i][1],contentData[i][index+2],""))
+                stuData.add(StudentInfo(contentData[i][0], contentData[i][1], contentData[i][index + 2], ""))
                 //Log.v(TAG,"type "+contentData[i][index+2])
             }catch (e: IndexOutOfBoundsException){
-                stuData.add(StudentInfo(contentData[i][0],contentData[i][1],"",""))
+                stuData.add(StudentInfo(contentData[i][0], contentData[i][1], "", ""))
             }
 
         }

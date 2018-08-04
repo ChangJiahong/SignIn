@@ -4,14 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.StudentInfo
+import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.util.SpeakUtil
 import kotlinx.android.synthetic.main.activity_sign_in.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
@@ -19,6 +21,7 @@ import java.io.Serializable
 
 class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
+    val TAG = "SignIn"
 
     /**
      * 当前数据索引
@@ -41,6 +44,10 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
      * 自动显示下一个
      */
     var nextFlag: Boolean = false
+
+    var speakUtil: SpeakUtil? = null
+
+    val speakFalg = App.app!!.dsp!!.getBoolean("voice_is",true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +88,37 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         shiJia.setOnClickListener(this)
 
         bingJia.setOnClickListener(this)
+
+        say_btn.setOnClickListener{
+            speack()
+        }
+
+        initialButtons(false)
+
+        doAsync {
+            speakUtil = SpeakUtil.getInstance(this@SignInActivity)
+            if(speakUtil!!.synthesizer == null) {
+
+                if(!speakUtil!!.initialTts()){
+                    // 加载初始化失败
+                    runOnUiThread {
+                        toast("鉴权失败，请检查网络稍后重试！")
+                    }
+
+                }else{
+                    runOnUiThread {
+                        initialButtons(true)
+                        if(nextFlag) {
+                            speack("开始点名:  ")
+                        }
+                        speack()
+                    }
+                }
+
+            }
+
+        }
+
     }
 
     override fun onClick(v: View?) {
@@ -93,6 +131,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         if(nextFlag) {
             if (index >= data!!.size - 1) {
                 toast("点完了")
+                speack("点名结束")
             } else {
                 progress.visibility = View.VISIBLE
                 doAsync {
@@ -131,23 +170,23 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         when(v.id){
             R.id.dao -> {
                 dao.backgroundResource = R.drawable.hua
-                return "dao"
+                return "出勤"
             }
             R.id.chiDao -> {
                 chiDao.backgroundResource = R.drawable.hua
-                return "chiDao"
+                return "迟到"
             }
             R.id.kuangKe -> {
                 kuangKe.backgroundResource = R.drawable.hua
-                return "kuangKe"
+                return "旷课"
             }
             R.id.shiJia -> {
                 shiJia.backgroundResource = R.drawable.hua
-                return "shiJia"
+                return "事假"
             }
             R.id.bingJia -> {
                 bingJia.backgroundResource = R.drawable.hua
-                return "bingJia"
+                return "病假"
             }
         }
         return ""
@@ -191,6 +230,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             index--
             show(index)
         }
+        speack()
 
     }
 
@@ -205,6 +245,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             index++
             show(index)
         }
+        speack()
 
     }
 
@@ -214,7 +255,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
      */
     private fun show(index : Int){
         item = data!![index]
-        id.text = item!!.id
+        id.text = item!!.stuId
         name.text = item!!.name
         check(item!!.type)
     }
@@ -225,6 +266,42 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val intent = Intent()
+        intent.putExtra("data",data as Serializable)
+        setResult(Activity.RESULT_OK,intent)
+        finish()
         return super.onOptionsItemSelected(item)
+    }
+
+    fun speack(){
+        if(!name.text.isEmpty()) {
+            speack(name.text.toString())
+        }
+    }
+    fun speack(text: String){
+        if(speakFalg) {
+            speakUtil!!.speak(text)
+        }
+    }
+
+    private fun initialButtons(flag: Boolean) {
+
+        dao.isEnabled = flag // 先禁用按钮，等待引擎初始化后打开。
+        chiDao.isEnabled = flag
+        kuangKe.isEnabled = flag
+        shiJia.isEnabled = flag
+        bingJia.isEnabled = flag
+        last.isEnabled = flag
+        next.isEnabled = flag
+        say_btn.isEnabled = flag
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(speakUtil != null) {
+            speakUtil!!.release()
+            speakUtil = null
+            Log.d("My","Sign释放")
+        }
     }
 }

@@ -1,47 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.StuListActivity"
-    android:orientation="vertical">
+    tools:context=".Activity.StuListActivity">
 
 
-    <TextView
-        android:id="@+id/class_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="班级"
-        android:gravity="center"
-        android:textSize="26dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/defult"/>
-    <HorizontalScrollView
-        android:id="@+id/hv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none">
-        <RadioGroup
-            android:id="@+id/mMenu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"></RadioGroup>
-    </HorizontalScrollView>
-
-    <include
-        layout="@layout/stu_list_top_item"
-        />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/stu_list"
+    <LinearLayout
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        ></android.support.v7.widget.RecyclerView>
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/class_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="班级"
+            android:gravity="center"
+            android:textSize="26dp"/>
+
+        <include
+            layout="@layout/stu_list_top_item"
+            />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/stu_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            ></android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 
 
-</LinearLayout>
+</RelativeLayout>

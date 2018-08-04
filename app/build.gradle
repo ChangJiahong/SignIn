@@ -13,6 +13,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+        ndk {
+            abiFilters "armeabi", "armeabi-v7a", "x86", "mips"
+        }
     }
     buildTypes {
         release {
@@ -20,6 +25,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
 }
 
 dependencies {
@@ -28,25 +35,61 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'com.android.support:support-v4:27.1.1'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     ext.anko_version = '0.10.3'
+
     // 版本
+
     // Anko Commons
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
     // Anko Layouts
     implementation "org.jetbrains.anko:anko-sdk25:$anko_version"
+
     // sdk15, sdk19, sdk21, sdk23 are also available
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+
     // 主要为兼容一些控件事件的协程，不过协程coroutines目前还不是kotlin的正式内容
     implementation "org.jetbrains.anko:anko-sdk25-coroutines:$anko_version"
     implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$anko_version"
+
     //    implementation "org.jetbrains.anko:anko-sqlite:$anko_version"
+    implementation "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
     implementation 'com.github.huangyanbin:SmartTable:2.2.0'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.github.bumptech.glide:glide:3.5.2'
-    implementation files('libs/poi-3.15.jar')
-    implementation files('libs/poi-ooxml-3.15.jar')
-    implementation "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
+
+    // POIExcel表格
+
+    //    implementation files('libs/poi-3.15.jar')
+
+    //    implementation files('libs/poi-ooxml-3.15.jar')
+
+    // 百度语音
+
+    //    implementation files('libs/com.baidu.tts_2.3.2.20180419_5a5fec8.jar')
+
+    // 人脸识别
+    implementation 'com.guo.android_extend:android-extend:1.0.1'
+
+    //    implementation files('libs/ageestimation.jar')
+
+    //    implementation files('libs/facedetection.jar')
+
+    //    implementation files('libs/facerecognition.jar')
+
+    //    implementation files('libs/facetracking.jar')
+
+    //    implementation files('libs/genderestimation.jar')
+    implementation files('src/main/jniLibs/ageestimation.jar')
+    implementation files('src/main/jniLibs/com.baidu.tts_2.3.2.20180419_5a5fec8.jar')
+    implementation files('src/main/jniLibs/facedetection.jar')
+    implementation files('src/main/jniLibs/facerecognition.jar')
+    implementation files('src/main/jniLibs/facetracking.jar')
+    implementation files('src/main/jniLibs/genderestimation.jar')
+    implementation files('src/main/jniLibs/poi-3.15.jar')
+    implementation files('src/main/jniLibs/poi-ooxml-3.15.jar')
 }

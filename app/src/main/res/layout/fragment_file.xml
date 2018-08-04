@@ -3,11 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.FileFragment">
+    tools:context=".Fragment.FileFragment"
+    android:background="@color/defult1">
 
     <ListView
         android:id="@+id/fileListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
 
+    <include
+        android:id="@+id/empty_view"
+        layout="@layout/empty_view"
+        android:visibility="gone"
+        />
 </FrameLayout>

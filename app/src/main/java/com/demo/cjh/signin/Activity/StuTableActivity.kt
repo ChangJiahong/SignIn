@@ -6,18 +6,17 @@ import android.graphics.Paint
 import android.graphics.Rect
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.bin.david.form.data.CellInfo
 import com.bin.david.form.data.column.Column
-import com.bin.david.form.data.format.bg.IBackgroundFormat
 import com.bin.david.form.data.format.bg.ICellBackgroundFormat
 import com.bin.david.form.data.table.TableData
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.StudentInfo
+import com.demo.cjh.signin.`object`.StudentInfo
 import kotlinx.android.synthetic.main.activity_stu_table.*
-import org.jetbrains.anko.toast
 
-
+/**
+ * smallTable框架页面
+ */
 class StuTableActivity : AppCompatActivity() {
 
     val TAG = "StuTableActivity"
@@ -36,7 +35,7 @@ class StuTableActivity : AppCompatActivity() {
         var list = ArrayList<StudentInfo>()
         for(i in (0..60)){
             list.add(StudentInfo())
-            list[i].id = i.toString()
+            list[i].stuId = i.toString()
             list[i].name = "张三".plus(i)
         }
 

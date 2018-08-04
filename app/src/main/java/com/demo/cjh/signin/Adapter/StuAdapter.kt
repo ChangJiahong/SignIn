@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.StudentInfo
+import com.demo.cjh.signin.`object`.StudentInfo
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.find
 
@@ -39,7 +39,7 @@ class StuAdapter(val mItems : ArrayList<StudentInfo>, internal val didSelectedAt
         fun bind(model: StudentInfo){
 
             holder.idView.text = (position+1).toString()
-            holder.stu_id.text = model.id
+            holder.stu_id.text = model.stuId
             holder.name.text = model.name
             Log.v("StuAdapter",position.toString()+model.name+" "+model.type)
             unCheckAll(holder)

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.AboutMe"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/ab"/>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="30dp"
+            android:textSize="16dp"
+            android:lineSpacingExtra="8dp"
+            android:text="作为SignIn的开发人员，这是我们的第一个完整的作品，我们十分努力的去完善每一个细节，给用户最好的体验，如果你觉得达到了您的要求，请给我们点赞。"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/t3"
+            android:layout_alignParentStart="true"
+            android:gravity="center"
+            android:text="version:1.0.0" />
+
+        <TextView
+            android:id="@+id/t3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="开发者QQ:321168813"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="10dp"/>
+    </RelativeLayout>
+</LinearLayout>

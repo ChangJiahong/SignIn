@@ -1,0 +1,32 @@
+package com.demo.cjh.signin.`object`
+
+import com.demo.cjh.signin.util.getNow
+import java.io.Serializable
+
+/**
+ * 学生信息实例
+ */
+class StudentInfo : Serializable {
+
+    constructor(){}
+
+    constructor(stuId : String, name : String,  type : String, classId: String){
+        this.stuId = stuId
+        this.name = name
+        this.type = type
+        this.classId = classId
+        this.time = getNow()
+    }
+
+
+    var stuId = ""
+    var name = ""
+    var type = ""
+    var classId = ""
+    var time = ""
+    var no = ""
+
+    fun toStuSignInInfo(): StuSignInInfo {
+        return StuSignInInfo(stuId, classId, type, no)
+    }
+}
