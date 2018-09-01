@@ -1,15 +1,19 @@
 package com.demo.cjh.signin.Activity
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -171,30 +175,70 @@ class StuInfoActivity : AppCompatActivity(), View.OnClickListener {
                 .setItems(arrayOf("相册", "相机")) { dialog, which ->
                     when (which) {
                         1 -> {
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            val values = ContentValues(1)
-                            // 设置图片保存路径 ，默认在Pictures
-                            values.put(MediaStore.Images.Media.DATA, FileUtil.imageDirectory+"/"+ SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())+".jpg")
-                            values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-                            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                            App.setCaptureImage(uri)
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-                            startActivityForResult(intent, REQUEST_CODE_IMAGE_CAMERA)
+                            // 打开相机
+                            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+
+                                if (ContextCompat.checkSelfPermission(this,
+                                                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){ //表示未授权时
+                                    //进行授权
+                                    ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),1)
+                                }else{
+                                    //调用方法
+                                    startCamera()
+                                }
+                            }else{
+                                startCamera()
+                            }
+
                         }
                         0 -> {
-                            val intent =  Intent(Intent.ACTION_GET_CONTENT)
-                            //intent.setType(“image/*”);//选择图片
-                            //intent.setType(“audio/*”); //选择音频
-                            //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-                            //intent.setType(“video/*;image/*”);//同时选择视频和图片
-                            intent.type = "image/*"//
-                            intent.addCategory(Intent.CATEGORY_OPENABLE)
-                            startActivityForResult(intent,REQUEST_CODE_IMAGE_OP)
+                            // 打开相册
+                            startImg()
 
                         }
                     }
                 }.show()
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode){
+            1 ->{
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED){ //同意权限申请
+                    startCamera()
+                }else { //拒绝权限申请
+                    Toast.makeText(this,"权限被拒绝了",Toast.LENGTH_SHORT).show()
+                    //ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),1)
+                }
+            }
+        }
+    }
+    fun startCamera() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val values = ContentValues(1)
+        // 设置图片保存路径 ，默认在Pictures
+        values.put(MediaStore.Images.Media.DATA, FileUtil.imageDirectory+"/"+ SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())+".jpg")
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        App.setCaptureImage(uri)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        startActivityForResult(intent, REQUEST_CODE_IMAGE_CAMERA)
+    }
+
+    fun startImg() {
+        val intent =  Intent(Intent.ACTION_GET_CONTENT)
+        //intent.setType(“image/*”);//选择图片
+        //intent.setType(“audio/*”); //选择音频
+        //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+        //intent.setType(“video/*;image/*”);//同时选择视频和图片
+        intent.type = "image/*"//
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        startActivityForResult(intent,REQUEST_CODE_IMAGE_OP)
+    }
+
+
+
     fun insertFace(path: String): Boolean{
         var flag: Boolean? = null
         val bmp = FileUtil.decodeImage(path)

@@ -2,14 +2,19 @@ package com.demo.cjh.signin.Activity
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.nfc.Tag
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import com.demo.cjh.signin.FileUtil
 import com.demo.cjh.signin.R
 import org.jetbrains.anko.startActivity
 import java.util.ArrayList
+import android.widget.Toast
+
+
 
 class IndexActivity : AppCompatActivity() {
 
@@ -51,11 +56,13 @@ class IndexActivity : AppCompatActivity() {
             if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
                 toApplyList.add(perm)
                 // 进入到这里代表没有权限.
+                Log.v("Index",perm+"未获取权限")
             }
         }
         val tmpList = arrayOfNulls<String>(toApplyList.size)
         if (!toApplyList.isEmpty()) {
             ActivityCompat.requestPermissions(this, toApplyList.toTypedArray(), 123)
+            Log.v("Index","请求权限")
         }
 
     }
@@ -63,6 +70,27 @@ class IndexActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         // 此处为android 6.0以上动态授权的回调，用户自行实现。
+        when(requestCode){
+            123 ->{
+                for (i in 0 until grantResults.size) {
+
+                    val grantResult = grantResults[i]
+                    val s = permissions[i]
+                    if (grantResult == PackageManager.PERMISSION_GRANTED) { //这个是权限拒绝
+                        Log.v("Index",s + "权限申请成功")
+                        //Toast.makeText(this, s + "权限申请成功", Toast.LENGTH_SHORT).show()
+                    } else { //授权成功了
+                        //do Something
+                        Log.v("Index",s + "权限被拒绝了")
+                        //Toast.makeText(this, s + "权限被拒绝了", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            }
+        }
+
+
+
     }
 
 }

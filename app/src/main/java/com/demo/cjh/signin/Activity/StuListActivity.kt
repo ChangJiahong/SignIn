@@ -133,7 +133,7 @@ class StuListActivity : AppCompatActivity() {
             }
         })
 
-
+        Log.v(TAG,"初始化成功")
 
     }
 
@@ -309,10 +309,13 @@ class StuListActivity : AppCompatActivity() {
                         val da = datas.getStringArrayListExtra("stuIds")
                         stuData.forEach {
                             var its = it
+                            Log.v(TAG," | " +its.stuId+" "+its.type)
                             if(da.any { its.stuId == it }){
                                 // 存在
-                                it.type = "出勤"
+                                its.type = "出勤"
                             }
+
+                            Log.v(TAG,its.stuId+" "+its.type)
                         }
                         Log.v(TAG,"人脸识别回调  "+stuData[0].type)
                         stu_list.adapter.notifyDataSetChanged()

@@ -1,23 +1,15 @@
 package com.demo.cjh.signin.Activity
 
-import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.widget.AdapterView
-import android.widget.EditText
 import com.demo.cjh.signin.Fragment.MenuFragment
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.`object`.ClassInfo
 import com.demo.cjh.signin.util.database
-import com.demo.cjh.signin.util.generateRefID
-import kotlinx.android.synthetic.main.fragment_menu.*
+import kotlinx.android.synthetic.main.activity_my_class.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.find
-import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 
 class MyClass : AppCompatActivity() {

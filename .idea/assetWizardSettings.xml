@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="121" />
+                                                <entry key="scalingPercent" value="75" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -33,7 +33,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="foregroundImage" value="D:\AndroidStudioProject\SignIn\app\src\main\res\drawable\ic_launcher.png" />
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="foregroundImage" value="D:\CJH\Downloads\签到.png" />
                                     </map>
                                   </option>
                                 </PersistentState>

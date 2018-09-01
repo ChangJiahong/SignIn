@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.BaseAdapter
@@ -122,9 +123,11 @@ class FileFragment : Fragment() {
             R.id.edit ->{
                 val MenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
 
-                var file = File(FileUtil.fileDirectory+"/"+fileDatas[MenuInfo.position])
+                var file = File(FileUtil.fileDirectory+"/"+fileDatas[MenuInfo.position][0])
+                Log.v("FileFragment",file.path)
                 if(file.exists()){
                     file.delete()
+                    Log.v("Delete",file.name+" is deleted!")
                 }
                 fileDatas.removeAt(MenuInfo.position)
                 adapter!!.notifyDataSetChanged()

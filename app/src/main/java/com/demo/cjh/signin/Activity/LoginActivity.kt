@@ -7,9 +7,13 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import com.demo.cjh.signin.R
+import com.demo.cjh.signin.util.Http
 import kotlinx.android.synthetic.main.activity_login.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.doAsyncResult
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+import org.json.JSONObject
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
@@ -56,6 +60,28 @@ class LoginActivity : AppCompatActivity() {
             }else{
 
                 showProgress(true)
+                doAsync {
+                    var jsonString = Http.login(_account,_password)
+                    var jsonObject = JSONObject(jsonString)
+                    var status = jsonObject.getInt("status")
+                    when(status){
+                        1 ->{
+                            // 登陆成功
+                            toast("登陆成功")
+                            var data = jsonObject.getString("data")
+                            finish()
+                        }
+                        0 ->{
+                            // 登陆失败
+                            var msg = jsonObject.getString("message")
+                            toast(msg)
+                        }
+                    }
+                    runOnUiThread {
+                        showProgress(false)
+                    }
+                }
+
 //                thread(start = true){
 //                    Thread.sleep(3000)
 //                    // 登录处理

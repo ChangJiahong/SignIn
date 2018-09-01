@@ -12,9 +12,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import android.widget.BaseAdapter
 import android.widget.ImageView
-import com.demo.cjh.signin.Activity.AboutMe
-import com.demo.cjh.signin.Activity.MyClass
-import com.demo.cjh.signin.Activity.SettingsActivity
+import com.demo.cjh.signin.Activity.*
 import kotlinx.android.synthetic.main.fragment_my.*
 import kotlinx.android.synthetic.main.list_my_item.*
 import org.jetbrains.anko.support.v4.startActivity
@@ -66,7 +64,7 @@ class MyFragment : Fragment(), View.OnClickListener {
                 startActivity<AboutMe>()
             }
             R.id.bangzhu ->{
-                toast("功能尚未开放，尽请期待！")
+                startActivity<HelpActivity>()
             }
             R.id.id_my_text1 ->{
                 startActivity<MyClass>()
@@ -78,7 +76,7 @@ class MyFragment : Fragment(), View.OnClickListener {
                 toast("功能尚未开放，尽请期待！")
             }
             R.id.login ->{
-                toast("功能尚未开放，尽请期待！")
+                startActivity<LoginActivity>()
             }
         }
     }

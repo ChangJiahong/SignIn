@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -20,9 +19,9 @@
 
     <application
         android:name=".App"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -44,7 +43,8 @@
             android:launchMode="singleTask" />
         <activity android:name=".Activity.SignInActivity" />
         <activity android:name=".Activity.StuTableActivity" />
-        <activity android:name=".Activity.StuListActivity" />
+        <activity android:name=".Activity.StuListActivity"
+            android:configChanges="orientation|screenSize"/>
         <activity android:name=".Activity.TableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -64,12 +64,14 @@
             android:name=".Activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".Activity.AboutMe" />
-        <activity android:name=".Activity.SignInByFace"
+        <activity
+            android:name=".Activity.SignInByFace"
             android:screenOrientation="landscape"
-            android:theme="@style/NoTitleTheme"/>
+            android:theme="@style/NoTitleTheme" />
         <activity android:name=".Activity.MyClass" />
         <activity android:name=".Activity.StuList" />
-        <activity android:name=".Activity.StuInfoActivity"></activity>
+        <activity android:name=".Activity.StuInfoActivity" />
+        <activity android:name=".Activity.HelpActivity"></activity>
     </application>
 
 </manifest>
