@@ -1,5 +1,6 @@
 package com.demo.cjh.signin.Activity
 
+import android.content.Intent
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,14 +10,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TabHost
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.demo.cjh.signin.App
 import com.demo.cjh.signin.Fragment.FileFragment
 import com.demo.cjh.signin.Fragment.MenuFragment
 import com.demo.cjh.signin.Fragment.MyFragment
 import com.demo.cjh.signin.R
+import com.demo.cjh.signin.util.Http
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.find
-import org.jetbrains.anko.imageResource
-import org.jetbrains.anko.textColorResource
+import kotlinx.android.synthetic.main.list_my_item.*
+import org.jetbrains.anko.*
+import org.json.JSONObject
+import java.net.SocketTimeoutException
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,6 +52,71 @@ class MainActivity : AppCompatActivity() {
         tabhost.tabWidget.getChildTabViewAt(1).setOnClickListener { check(1) }
         tabhost.tabWidget.getChildTabViewAt(2).setOnClickListener { check(2) }
 
+
+        // 自动登陆
+        initLogin()
+
+    }
+
+    private fun initLogin() {
+
+        val sp = App.app!!.sp!!
+        val userid = sp.getString("userid","")
+        var userToken = sp.getString("userToken","")
+        if (userid.isNullOrEmpty() && userToken.isNullOrEmpty()){
+            // 空
+            return
+        }
+        doAsync {
+            try {
+                val result = Http.login_by_token(userid, userToken)
+                var jsonObject = JSONObject(result)
+                var status = jsonObject.getInt("status")
+                when (status) {
+                    1 -> {
+                        // 登陆成功
+                        var data = jsonObject.getString("data")
+                        var jsonObject = JSONObject(data)
+                        var name = jsonObject.getString("name")
+                        var userToken = jsonObject.getString("userToken")
+                        var imgUrl = jsonObject.getString("imgUrl")
+                        var sp = App.app!!.sp!!
+                        sp.edit().apply {
+                            putString("name", name)
+                            putString("userToken", userToken)
+                            putString("imgUrl", imgUrl)
+                            putBoolean("isLogin", true)
+                            apply()
+                        }
+                        id_my_text.text = name
+                        Glide.with(applicationContext).load(imgUrl).into(id_my_icon)
+
+                    }
+
+                    0 ->{
+
+                        // 失败，过期
+                        var sp = App.app!!.sp!!
+                        sp.edit().apply {
+                            putString("name", "")
+                            putString("userToken", "")
+                            putString("imgUrl", "")
+                            putString("pwd","")
+                            putBoolean("isLogin", false)
+                            apply()
+                        }
+
+                        runOnUiThread {
+                            toast("登陆过期，请重新登陆！")
+                        }
+                    }
+                }
+            }catch (e: SocketTimeoutException){
+                "timeOut"
+            }
+
+
+        }
     }
 
     fun getTabView(textId: Int,imgId: Int): TabHost.TabSpec{

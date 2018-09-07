@@ -18,6 +18,7 @@ import android.text.TextUtils
 import android.view.KeyEvent
 import android.view.MenuItem
 import com.demo.cjh.signin.R
+import org.jetbrains.anko.toast
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -77,6 +78,14 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onHeaderClick(header: Header?, position: Int) {
+        super.onHeaderClick(header, position)
+        when(header!!.id.toInt()){
+            R.id.exit ->{
+                toast("退出")
+            }
+        }
+    }
     /**
      * 语音合成设置
      */

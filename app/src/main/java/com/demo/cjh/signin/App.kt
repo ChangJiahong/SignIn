@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.preference.PreferenceManager
+import com.demo.cjh.signin.Activity.UserInfo
+import com.demo.cjh.signin.`object`.User
 import com.demo.cjh.signin.util.FaceDB
 import com.demo.cjh.signin.util.MyDatabaseOpenHelper
 import com.demo.cjh.signin.util.database
@@ -37,6 +39,8 @@ class App : Application() {
     var sp: SharedPreferences? = null
     var dsp: SharedPreferences? = null
     var db: MyDatabaseOpenHelper? = null
+    var ip: String? = null
+    var user = User()
 
 
     override fun onCreate() {
@@ -45,5 +49,8 @@ class App : Application() {
         sp = applicationContext.getSharedPreferences("config", Context.MODE_PRIVATE)
         dsp = PreferenceManager.getDefaultSharedPreferences(this)
         db = database
+        ip = resources.getString(R.string.ip)
+
+
     }
 }

@@ -26,6 +26,12 @@ class StudentInfo : Serializable {
     var time = ""
     var no = ""
 
+    var face1: ByteArray? = null
+
+    var face2: ByteArray? = null
+
+    var face3: ByteArray? = null
+
     fun toStuSignInInfo(): StuSignInInfo {
         return StuSignInInfo(stuId, classId, type, no)
     }

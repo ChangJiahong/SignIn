@@ -22,7 +22,7 @@
             android:id="@+id/id_my_icon"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/user" />
+            android:src="@drawable/tou" />
 
         <TextView
             android:id="@+id/id_my_text"

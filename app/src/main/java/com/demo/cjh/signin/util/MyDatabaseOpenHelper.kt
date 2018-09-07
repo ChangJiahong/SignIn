@@ -455,4 +455,158 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         return null
     }
 
+    fun query_stuInfo(): ArrayList<StudentInfo> {
+        var sql = "select * from ${STUINFO} ;"
+        var db = readableDatabase
+        var data = ArrayList<StudentInfo>()
+        var cursor = db.rawQuery(sql,null)
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StudentInfo()
+            da.stuId = cursor.getString(1) // stuId 学生学号
+            da.name = cursor.getString(2) // name 姓名
+            da.classId = cursor.getString(3) // classId 班级编号
+            da.time = cursor.getString(4) // time
+            da.face1 = cursor.getBlob(5)
+            da.face2 = cursor.getBlob(6)
+            da.face3 = cursor.getBlob(7)
+            data.add(da)
+            cursor.moveToNext()
+        }
+
+        return data
+    }
+
+    /**
+     * 查询全部学生考勤记录表
+     */
+    fun query_signInList(): ArrayList<StuSignInList>{
+        var sql = "select * from ${STUSIGNINLIST} ;"
+        var db = readableDatabase
+        var data = ArrayList<StuSignInList>()
+        var cursor = db.rawQuery(sql, null)
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StuSignInList()
+            da.classId = cursor.getString(1) // classId 班级编号
+            da.time = cursor.getString(2) // time 时间
+            da.num = cursor.getInt(3) // num 当天次数
+            da.info = cursor.getString(4) // info 考勤备注
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"考勤记录表查询成功")
+        return data
+    }
+
+
+    fun query_signInInfo() : ArrayList<StuSignInInfo>{
+        var sql = "select * from ${STUSIGNININFO} ;"
+        var db = readableDatabase
+        var data = ArrayList<StuSignInInfo>()
+        var cursor = db.rawQuery(sql, null)
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StuSignInInfo()
+            da.stuId = cursor.getString(1) // stuid 学生编号
+            da.classId = cursor.getString(2) // classId 班级编号
+            da.type = cursor.getString(3) // type 考勤信息
+            da.no = cursor.getString(4) // no 考勤编号
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"考勤详情表查询成功")
+        return data
+    }
+
+    fun queryFaces(): ArrayList<FaceData> {
+        val faces = ArrayList<FaceData>()
+        var sql = "select * from ${STUINFO};"
+        var db = readableDatabase
+        var cursor = db.rawQuery(sql, null)
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = FaceData(cursor.getString(1),cursor.getString(2))
+            da.classId = cursor.getString(3)
+
+            var fd = cursor.getBlob(cursor.getColumnIndex("face1"))
+            if(fd != null){
+                da.face1 = fd
+                da.isNoFace = false
+            }
+            fd = cursor.getBlob(6)
+            if(fd != null){
+                da.face1 = fd
+                da.isNoFace  = false
+            }
+            fd = cursor.getBlob(7)
+            if(fd != null){
+                da.face1 = fd
+                da.isNoFace = false
+            }
+            if(!da.isNoFace) {
+                // 如果有脸部信息，添加
+                faces.add(da)
+            }
+        }
+        Log.v(TAG,"查找到脸部数据")
+        return faces
+    }
+
+    fun insertStuInfos(stuInfos: ArrayList<StudentInfo>){
+        var db = writableDatabase
+        for(stuInfo in stuInfos){
+            var cv = ContentValues()
+            cv.put(StuInfoCell[1],stuInfo.stuId)
+            cv.put(StuInfoCell[2],stuInfo.name)
+            cv.put(StuInfoCell[3],stuInfo.classId)
+            cv.put(StuInfoCell[4],stuInfo.time)
+            db.insert(STUINFO,null,cv)
+        }
+    }
+
+    fun insertClassInfo(classInfos: ArrayList<ClassInfo>) {
+        var db = writableDatabase
+        for(classInfo in classInfos) {
+            var cv = ContentValues()
+            cv.put(ClassInfoCell[1], classInfo.classId)
+            cv.put(ClassInfoCell[2], classInfo.className)
+            cv.put(ClassInfoCell[3], classInfo.info)
+            cv.put(ClassInfoCell[4], classInfo.time)
+            db.insert(CLASSINFO, null, cv)
+        }
+
+    }
+
+    fun insertStuSignInList(signInList: ArrayList<StuSignInList>) {
+
+        var db = writableDatabase
+        for(signIn in signInList) {
+            var cv = ContentValues()
+            cv.put(StuSignInListCell[1], signIn.classId)
+            cv.put(StuSignInListCell[2], signIn.time)
+            cv.put(StuSignInListCell[3], signIn.num)
+            cv.put(StuSignInListCell[4], signIn.info)
+            db.insert(STUSIGNINLIST, null, cv)
+        }
+        Log.v(TAG,"考勤记录表插入成功")
+    }
+
+    fun insertStuSignINInfo(signInInfos: ArrayList<StuSignInInfo>) {
+
+        for(signInInfo in signInInfos) {
+            insert_stuSignInInfo(signInInfo)
+        }
+    }
+
+
+    fun cleanDataBase(){
+        var db = writableDatabase
+
+        db.delete(STUSIGNININFO,null,null)
+        db.delete(STUSIGNINLIST,null,null)
+        db.delete(STUINFO,null,null)
+        db.delete(CLASSINFO,null,null)
+
+    }
 }

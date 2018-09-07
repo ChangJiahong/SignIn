@@ -13,6 +13,13 @@ import com.demo.cjh.signin.R
 import org.jetbrains.anko.startActivity
 import java.util.ArrayList
 import android.widget.Toast
+import com.demo.cjh.signin.App
+import com.demo.cjh.signin.util.Http
+import org.jetbrains.anko.doAsync
+import org.json.JSONObject
+import java.net.SocketTimeoutException
+import android.os.StrictMode
+
 
 
 
@@ -22,13 +29,19 @@ class IndexActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_index)
 
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+        }
+
         object :Thread(){
             override fun run() {
                 // 初始化app
                 FileUtil.initFile()
                 initPermission()  // 申请权限
 
-                Thread.sleep(3000)
+
+                sleep(3000)
                 //startActivity<LoginActivity>()
                 // TODO:自动登录
                 startActivity<MainActivity>()
@@ -36,6 +49,8 @@ class IndexActivity : AppCompatActivity() {
             }
         }.start()
     }
+
+
 
     /**
      * android 6.0 以上需要动态申请权限

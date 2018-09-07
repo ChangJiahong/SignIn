@@ -1,11 +1,14 @@
 package com.demo.cjh.signin.Activity
 
+import android.app.Activity
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.Http
 import kotlinx.android.synthetic.main.activity_login.*
@@ -14,11 +17,18 @@ import org.jetbrains.anko.doAsyncResult
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import org.json.JSONObject
+import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
 
     val TAG = "LoginActivity"
+
+
+    var _account  = ""
+    var _password = ""
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -28,14 +38,31 @@ class LoginActivity : AppCompatActivity() {
 
     private fun init() {
 
+        val sp = App.app!!.sp!!
+
+        _account  = sp.getString("userid",null)
+        _password = sp.getString("pwd",null)
+
+        account.setText(_account)
+        password.setText(_password)
+
+
         login.setOnClickListener{
-            var _account  = account.text.toString()
-            var _password = password.text.toString()
+            if(currentFocus !=null)
+            {
+                (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+                        .hideSoftInputFromWindow(currentFocus
+                                .getWindowToken(),
+                                InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+
+            _account  = account.text.toString()
+            _password = password.text.toString()
 
             var focusView : View? = null
             var cancel = false
 
-            if (!TextUtils.isEmpty(_password) && _password.length > 6) {
+            if (!TextUtils.isEmpty(_password) && _password.length < 8) {
                 password.error = "密码太短了"
                 focusView = password
                 cancel = true
@@ -60,40 +87,6 @@ class LoginActivity : AppCompatActivity() {
             }else{
 
                 showProgress(true)
-                doAsync {
-                    var jsonString = Http.login(_account,_password)
-                    var jsonObject = JSONObject(jsonString)
-                    var status = jsonObject.getInt("status")
-                    when(status){
-                        1 ->{
-                            // 登陆成功
-                            toast("登陆成功")
-                            var data = jsonObject.getString("data")
-                            finish()
-                        }
-                        0 ->{
-                            // 登陆失败
-                            var msg = jsonObject.getString("message")
-                            toast(msg)
-                        }
-                    }
-                    runOnUiThread {
-                        showProgress(false)
-                    }
-                }
-
-//                thread(start = true){
-//                    Thread.sleep(3000)
-//                    // 登录处理
-//                    if(_account == "18855486127"  && _password == "123456"){
-//                        startActivity<MainActivity>()
-//                    }else{
-//                        toast("用户名或密码错误")
-//                    }
-//                    runOnUiThread {
-//                        showProgress(false)
-//                    }
-//                }
 
                 val loginTask = LoginTask()
                 loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, _account,_password)
@@ -102,6 +95,10 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    fun register(v: View){
+        startActivity<RegisterActivity>()
     }
 
     public fun showProgress(show : Boolean){
@@ -113,24 +110,69 @@ class LoginActivity : AppCompatActivity() {
         return m.matches()
     }
 
-    inner class LoginTask : AsyncTask<String, Void, Boolean>() {
-        override fun doInBackground(vararg params: String?): Boolean {
+    inner class LoginTask : AsyncTask<String, Void, String>() {
+        override fun doInBackground(vararg params: String?): String {
             Thread.sleep(3000)
             Log.v(TAG,params.first()!!)
-            if(params[0] == "18855486127"  && params[1] == "123456"){
-                return true
+
+            try {
+
+                var jsonString = Http.login_by_pwd(userid = params[0]!!,pwd = params[1]!!)
+                return jsonString
+            } catch (e: SocketTimeoutException){
+                return "timeOut"
             }
-            return false
+
+
         }
 
-        override fun onPostExecute(result: Boolean?) {
+        override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             showProgress(false)
-            if(result!!){
-                startActivity<MainActivity>()
-                finish()
-            }else{
-                toast("用户名或密码错误")
+
+            Log.v(TAG, result!!)
+            if (result.equals("timeOut")) {
+                // 服务器响应超时
+                toast("服务器响应超时")
+
+            } else {
+                var jsonObject = JSONObject(result!!)
+                var status = jsonObject.getInt("status")
+                when (status) {
+                    1 -> {
+                        // 登陆成功
+                        toast("登陆成功")
+                        var data = jsonObject.getString("data")
+                        var jsonObject = JSONObject(data)
+                        var name = jsonObject.getString("name")
+                        var userToken = jsonObject.getString("userToken")
+                        var imgUrl = jsonObject.getString("imgUrl")
+                        var sp = App.app!!.sp!!
+                        sp.edit().apply {
+                            putString("userid", _account)
+                            putString("name", name)
+                            putString("userToken", userToken)
+                            putString("imgUrl", imgUrl)
+                            putString("pwd", _password)
+                            putBoolean("isLogin", true)
+                            apply()
+                        }
+                        setResult(Activity.RESULT_OK)
+                        finish()
+
+                    }
+                    0 -> {
+                        // 登陆失败
+                        var msg = jsonObject.getString("message")
+                        toast(msg)
+                        var sp = App.app!!.sp!!
+                        sp.edit().apply {
+                            putBoolean("isLogin", false)
+                            apply()
+                        }
+                    }
+                }
+
             }
         }
 

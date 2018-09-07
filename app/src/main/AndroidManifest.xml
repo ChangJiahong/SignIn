@@ -43,8 +43,9 @@
             android:launchMode="singleTask" />
         <activity android:name=".Activity.SignInActivity" />
         <activity android:name=".Activity.StuTableActivity" />
-        <activity android:name=".Activity.StuListActivity"
-            android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name=".Activity.StuListActivity"
+            android:configChanges="orientation|screenSize" />
         <activity android:name=".Activity.TableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -71,7 +72,23 @@
         <activity android:name=".Activity.MyClass" />
         <activity android:name=".Activity.StuList" />
         <activity android:name=".Activity.StuInfoActivity" />
-        <activity android:name=".Activity.HelpActivity"></activity>
+        <activity
+            android:name=".Activity.HelpActivity"
+            android:label="@string/title_activity_help" />
+        <activity
+            android:name=".Activity.UserInfo"
+            android:label="@string/title_activity_user" />
+        <activity
+            android:name=".Activity.UpName"
+            android:label="@string/title_activity_name" />
+        <activity
+            android:name=".Activity.UpPwd"
+            android:label="@string/title_activity_pwd" />
+        <activity
+            android:name=".Activity.YunActivity"
+            android:label="@string/title_activity_yun" />
+        <activity android:name=".Activity.RegisterActivity"
+            android:theme="@style/NoTitleTheme1" ></activity>
     </application>
 
 </manifest>
