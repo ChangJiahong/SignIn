@@ -40,8 +40,8 @@ class LoginActivity : AppCompatActivity() {
 
         val sp = App.app!!.sp!!
 
-        _account  = sp.getString("userid",null)
-        _password = sp.getString("pwd",null)
+        _account  = sp.getString("userid","")
+        _password = sp.getString("pwd","")
 
         account.setText(_account)
         password.setText(_password)

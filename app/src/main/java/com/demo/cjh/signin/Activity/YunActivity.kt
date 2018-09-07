@@ -31,6 +31,11 @@ class YunActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+        if(!App.app!!.sp!!.getBoolean("isLogin",false)){
+            toast("还未登陆，先登陆试试！")
+
+            return
+        }
         when(v!!.id){
             R.id.back_up ->{
                 // 备份
