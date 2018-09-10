@@ -143,6 +143,6 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
 
-    <string name="ip">http://47.106.181.61:8080</string>
+    <string name="ip">http://</string>
 
 </resources>
