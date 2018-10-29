@@ -1,19 +1,9 @@
 package com.demo.cjh.signin.util
 
-import android.annotation.SuppressLint
-import android.content.ContentUris
 import android.content.Context
-import android.database.Cursor
 import android.graphics.*
-import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import android.support.annotation.RequiresApi
 import android.util.Log
-import com.arcsoft.facerecognition.AFR_FSDKFace
-import com.demo.cjh.signin.`object`.*
+import com.demo.cjh.signin.obj.*
 import com.guo.android_extend.java.ExtByteArrayOutputStream
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.DateUtil
@@ -22,11 +12,6 @@ import org.json.JSONObject
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import java.nio.file.Files
-import java.nio.file.LinkOption
-import java.nio.file.Paths
-import java.nio.file.attribute.BasicFileAttributeView
-import java.nio.file.attribute.BasicFileAttributes
 import kotlin.collections.ArrayList
 import kotlin.experimental.and
 

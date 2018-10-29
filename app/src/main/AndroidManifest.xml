@@ -87,8 +87,18 @@
         <activity
             android:name=".Activity.YunActivity"
             android:label="@string/title_activity_yun" />
-        <activity android:name=".Activity.RegisterActivity"
-            android:theme="@style/NoTitleTheme1" ></activity>
+        <activity
+            android:name=".Activity.RegisterActivity"
+            android:theme="@style/NoTitleTheme1" />
+        <activity android:name=".Activity.HistoryActivity" />
+        <activity android:name=".Activity.ClassActivity" />
+        <activity android:name=".Activity.SelectActivity" />
+        <activity android:name=".Activity.GPAActivity" />
+        <activity android:name=".Activity.GListActivity" />
+        <activity android:name=".Activity.TestListActivity" />
+        <activity android:name=".Activity.TestActivity" />
+        <activity android:name=".Activity.StatisticsActivity" />
+        <activity android:name=".Activity.StatisticsClassActivity"></activity>
     </application>
 
 </manifest>

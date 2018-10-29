@@ -8,14 +8,13 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
 import android.widget.*
 import com.demo.cjh.signin.*
 import com.demo.cjh.signin.Adapter.StuAdapter
-import com.demo.cjh.signin.`object`.StuSignInList
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StuSignInList
+import com.demo.cjh.signin.obj.StudentInfo
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.getNow
 import kotlinx.android.synthetic.main.activity_stu_list.*
@@ -64,6 +63,7 @@ class StuListActivity : AppCompatActivity() {
         type = intent.getIntExtra("type",0)
         classId = intent.getStringExtra("classId")
         var className = intent.getStringExtra("className")
+
         var no = ""
         if(type != 0)
             no = intent.getStringExtra("no")
@@ -75,6 +75,7 @@ class StuListActivity : AppCompatActivity() {
         stu_list.adapter = StuAdapter(stuData){position ->
             if(type != 2) {
                 flag = true
+                signIn = false
                 val intent = Intent(this@StuListActivity, SignInActivity::class.java)
                 intent.putExtra("code", 0)
                 intent.putExtra("position", position)
@@ -120,24 +121,22 @@ class StuListActivity : AppCompatActivity() {
 
 
 
-        stu_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if(dy > 0){
-                    Log.v(TAG,"向下")
-
-                }else if(dy <0){
-                    Log.v(TAG,"向上")
-
-                }
-            }
-        })
+//        stu_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+//                super.onScrolled(recyclerView, dx, dy)
+//                if(dy > 0){
+//                    Log.v(TAG,"向下")
+//
+//                }else if(dy <0){
+//                    Log.v(TAG,"向上")
+//
+//                }
+//            }
+//        })
 
         Log.v(TAG,"初始化成功")
 
     }
-
-
 
 
 
@@ -247,6 +246,7 @@ class StuListActivity : AppCompatActivity() {
         when(item!!.itemId){
             R.id.dm ->{
                 // 手动点名
+                signIn = false
                 val intent = Intent(this@StuListActivity,SignInActivity::class.java)
 
                 intent.putExtra("code",1)

@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StudentInfo
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.find
 

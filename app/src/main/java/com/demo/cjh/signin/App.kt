@@ -5,8 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.preference.PreferenceManager
-import com.demo.cjh.signin.Activity.UserInfo
-import com.demo.cjh.signin.`object`.User
+import com.demo.cjh.signin.obj.User
 import com.demo.cjh.signin.util.FaceDB
 import com.demo.cjh.signin.util.MyDatabaseOpenHelper
 import com.demo.cjh.signin.util.database

@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StudentInfo
 import com.demo.cjh.signin.util.database
 import kotlinx.android.synthetic.main.activity_stu_list2.*
 import org.jetbrains.anko.doAsync

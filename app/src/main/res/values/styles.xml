@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
     </style>
 
     <style name="NoTitleTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
@@ -48,6 +49,19 @@
 
         <!--<item name="android:windowIsTranslucent">true</item>-->
 
-
     </style>
+
+    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>  <!--设置不覆盖锚点-->
+        <item name="android:dropDownVerticalOffset">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+    </style>
+
+    <!--屏幕下方弹出的菜单-->
+    <style name="animation_bottom_menu">
+        <item name="android:windowEnterAnimation">@anim/window_up_in</item>
+        <item name="android:windowExitAnimation">@anim/window_down_off</item>
+    </style>
+
+
 </resources>

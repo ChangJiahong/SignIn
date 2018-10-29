@@ -43,7 +43,6 @@ class IndexActivity : AppCompatActivity() {
 
                 sleep(3000)
                 //startActivity<LoginActivity>()
-                // TODO:自动登录
                 startActivity<MainActivity>()
                 finish()
             }

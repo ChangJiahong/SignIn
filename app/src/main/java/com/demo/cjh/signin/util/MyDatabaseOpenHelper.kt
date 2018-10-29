@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.arcsoft.facerecognition.AFR_FSDKFace
-import com.demo.cjh.signin.`object`.*
+import com.demo.cjh.signin.obj.*
 import kotlin.collections.ArrayList
 
 /**
@@ -42,6 +42,22 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
          * 学生考勤记录表
          */
         val STUSIGNINLIST = "StuSignInList"
+        /**
+         * 课堂表现记录
+         */
+        val GPALIST = "GpaList"
+        /**
+         * 课堂表现信息
+         */
+        val GPAINFO = "GpaInfo"
+        /**
+         * 实验表现记录
+         */
+        val TESTLIST = "TestList"
+        /**
+         * 实验表现信息
+         */
+        val TESTINFO = "TestInfo"
 
         /**
          * 学生信息表列名
@@ -62,6 +78,14 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
          * 学生考勤记录表列名
          */
         val StuSignInListCell = arrayOf("id","classId","time","num","info")
+
+        val GpaListCell = arrayOf("id","classId","time","num","info")
+
+        val GpaInfoCell = arrayOf("id","stuId","classId","type","no")
+
+        val TestListCell = arrayOf("id","classId","time","num","info")
+
+        val TestInfoCell = arrayOf("id","stuId","classId","type","no")
 
         @Synchronized
         fun getInstence(context: Context) : MyDatabaseOpenHelper {
@@ -90,10 +114,21 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         var class_sql = "CREATE TABLE IF NOT EXISTS ${CLASSINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,className VARCHAR(50) NOT NULL,info TEXT,time VARCHAR NOT NULL);"
         var stu_info = "CREATE TABLE IF NOT EXISTS ${STUSIGNININFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
         var stu_list = "CREATE TABLE IF NOT EXISTS ${STUSIGNINLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+        var gpa_list = "CREATE TABLE IF NOT EXISTS ${GPALIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+        var gpa_info = "CREATE TABLE IF NOT EXISTS ${GPAINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+        var test_list = "CREATE TABLE IF NOT EXISTS ${TESTLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+        var test_info = "CREATE TABLE IF NOT EXISTS ${TESTINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+
+
         db!!.execSQL(stu_sql)
         db.execSQL(class_sql)
         db.execSQL(stu_info)
         db.execSQL(stu_list)
+        db.execSQL(gpa_info)
+        db.execSQL(gpa_list)
+        db.execSQL(test_info)
+        db.execSQL(test_list)
+
         Log.d(TAG,"createDB ${DB_NAME} successful！")
 
     }
@@ -182,6 +217,84 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
     }
 
     /**
+     * 学生课堂表现记录表 插入
+     */
+    fun insert_gpaList(da: StuSignInList){
+        //da.num = getNum(da.classId!!,da.time!!.substring(0,10))
+        var no = da.time!!.substring(0,10)+"("+da.num+")"
+        if(da.info!!.isEmpty()){
+            da.info = no
+        }
+
+        var db = writableDatabase
+        var cv = ContentValues()
+        cv.put(StuSignInListCell[1],da.classId)
+        cv.put(StuSignInListCell[2], da.time)
+        cv.put(StuSignInListCell[3],da.num)
+        cv.put(StuSignInListCell[4], da.info)
+        db.insert(GPALIST,null,cv)
+        Log.v(TAG,"课堂表现记录表插入成功")
+    }
+
+    /**
+     * 学生实验表现记录表 插入
+     */
+    fun insert_testList(da: StuSignInList){
+        //da.num = getNum(da.classId!!,da.time!!.substring(0,10))
+        var no = da.time!!.substring(0,10)+"("+da.num+")"
+        if(da.info!!.isEmpty()){
+            da.info = no
+        }
+
+        var db = writableDatabase
+        var cv = ContentValues()
+        cv.put(StuSignInListCell[1],da.classId)
+        cv.put(StuSignInListCell[2], da.time)
+        cv.put(StuSignInListCell[3],da.num)
+        cv.put(StuSignInListCell[4], da.info)
+        db.insert(TESTLIST,null,cv)
+        Log.v(TAG,"实验表现记录表插入成功")
+    }
+
+    /**
+     * 学生课堂表现信息详表 插入
+     */
+    fun insert_gpaInfo(da: StuSignInInfo){
+
+        // 获取考勤编号
+        // 考勤编号的计算格式 = YYYY-MM-DD(01)
+        //da.no = da.no!!.substring(0,10)+"("+getNum(da.classId!!,da.no!!.substring(0,10))+")"
+
+        var db = writableDatabase
+        var cv = ContentValues()
+        cv.put(StuSignInInfoCell[1],da.stuId)
+        cv.put(StuSignInInfoCell[2],da.classId)
+        cv.put(StuSignInInfoCell[3],da.type)
+        cv.put(StuSignInInfoCell[4],da.no) // 考勤编号
+        db.insert(GPAINFO,null,cv)
+        Log.v(TAG,"课堂表现详情表插入成功")
+    }
+
+    /**
+     * 学生课堂表现信息详表 插入
+     */
+    fun insert_testInfo(da: StuSignInInfo){
+
+        // 获取考勤编号
+        // 考勤编号的计算格式 = YYYY-MM-DD(01)
+        //da.no = da.no!!.substring(0,10)+"("+getNum(da.classId!!,da.no!!.substring(0,10))+")"
+
+        var db = writableDatabase
+        var cv = ContentValues()
+        cv.put(StuSignInInfoCell[1],da.stuId)
+        cv.put(StuSignInInfoCell[2],da.classId)
+        cv.put(StuSignInInfoCell[3],da.type)
+        cv.put(StuSignInInfoCell[4],da.no) // 考勤编号
+        db.insert(TESTINFO,null,cv)
+        Log.v(TAG,"实验表现详情表插入成功")
+    }
+
+    /**
      * 查询：班级信息表，获取班级信息列
      */
     fun query_classInfo(): ArrayList<ClassInfo>{
@@ -228,6 +341,55 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         return data
     }
 
+
+    /**
+     * 查询：学生课堂表现记录表，获取某班级课堂历史表现记录，通过【班级编号】
+     */
+    fun query_gpaList_by_classId(classId: String): ArrayList<StuSignInList>{
+        var sql = "select * from ${GPALIST} where classId = ?;"
+        var db = readableDatabase
+        var data = ArrayList<StuSignInList>()
+        var cursor = db.rawQuery(sql, arrayOf(classId))
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StuSignInList()
+            da.id = cursor.getString(0)  // id
+            da.classId = cursor.getString(1) // classId 班级编号
+            da.time = cursor.getString(2) // time 时间
+            da.num = cursor.getInt(3) // num 当天次数
+            da.info = cursor.getString(4) // info 考勤备注
+            da.no = da.time!!.substring(0,10)+"("+da.num+")"
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"课堂表现记录表查询成功")
+        return data
+    }
+
+    /**
+     * 查询：学生实验表现记录表，获取某班级课堂历史表现记录，通过【班级编号】
+     */
+    fun query_testList_by_classId(classId: String): ArrayList<StuSignInList>{
+        var sql = "select * from ${TESTLIST} where classId = ?;"
+        var db = readableDatabase
+        var data = ArrayList<StuSignInList>()
+        var cursor = db.rawQuery(sql, arrayOf(classId))
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StuSignInList()
+            da.id = cursor.getString(0)  // id
+            da.classId = cursor.getString(1) // classId 班级编号
+            da.time = cursor.getString(2) // time 时间
+            da.num = cursor.getInt(3) // num 当天次数
+            da.info = cursor.getString(4) // info 考勤备注
+            da.no = da.time!!.substring(0,10)+"("+da.num+")"
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"实验记录表查询成功")
+        return data
+    }
+
     /**
      * 查询：学生考勤详细记录，获取某条记录详细信息，通过【考勤编号】和【班级编号】
      */
@@ -250,6 +412,58 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         Log.v(TAG,"考勤详情表查询成功")
         return data
     }
+
+    /**
+     * 查询：学生课堂表现详细记录，获取某条记录详细信息，通过【课堂表现编号】和【班级编号】
+     */
+    fun query_gpaInfo_by_classId_and_no(classId: String,no: String): ArrayList<StudentInfo>{
+        Log.v(TAG, "$classId $no")
+        var sql = "select ${GPAINFO}.stuId,${GPAINFO}.classId,type,no,name from ${GPAINFO} ,${STUINFO} where ${GPAINFO}.classId = ? and no = ? and ${GPAINFO}.stuId = ${STUINFO}.stuId and ${GPAINFO}.classId = ${STUINFO}.classId;"
+        var db = readableDatabase
+        var data = ArrayList<StudentInfo>()
+        var cursor = db.rawQuery(sql, arrayOf(classId,no))
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StudentInfo()
+            da.stuId = cursor.getString(0) // stuId 学生学号
+            da.classId = cursor.getString(1) // classId 班级编号
+            da.type = cursor.getString(2) // type 课堂表现具体信息
+            da.no = cursor.getString(3) // no 课堂表现编号
+            da.name = cursor.getString(4) // no 课堂表现编号
+            data.add(da)
+            cursor.moveToNext()
+            Log.v(TAG,da.type)
+        }
+        Log.v(TAG,"课堂表现详情表查询成功")
+        return data
+    }
+
+
+    /**
+     * 查询：学生实验表现详细记录，获取某条记录详细信息，通过【课堂表现编号】和【班级编号】
+     */
+    fun query_testInfo_by_classId_and_no(classId: String,no: String): ArrayList<StudentInfo>{
+        Log.v(TAG, "$classId $no")
+        var sql = "select ${TESTINFO}.stuId,${TESTINFO}.classId,type,no,name from ${TESTINFO} ,${STUINFO} where ${TESTINFO}.classId = ? and no = ? and ${TESTINFO}.stuId = ${STUINFO}.stuId and ${TESTINFO}.classId = ${STUINFO}.classId;"
+        var db = readableDatabase
+        var data = ArrayList<StudentInfo>()
+        var cursor = db.rawQuery(sql, arrayOf(classId,no))
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = StudentInfo()
+            da.stuId = cursor.getString(0) // stuId 学生学号
+            da.classId = cursor.getString(1) // classId 班级编号
+            da.type = cursor.getString(2) // type 课堂表现具体信息
+            da.no = cursor.getString(3) // no 课堂表现编号
+            da.name = cursor.getString(4) // no 课堂表现编号
+            data.add(da)
+            cursor.moveToNext()
+            Log.v(TAG,da.type)
+        }
+        Log.v(TAG,"实验表现详情表查询成功")
+        return data
+    }
+
 
     /**
      * 查询：获取某班级学生信息
@@ -275,7 +489,37 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
      * 查询：获取某班级当天考勤次数
      */
     fun getNum(classId: String,time: String): Int{
-        var sql = "select Max(num) from ${STUSIGNINLIST} where classId = ? and substr(time,1,10) = ?;"
+        var sql = "select count() from ${STUSIGNINLIST} where classId = ? and substr(time,1,10) = ?;"
+        var db = readableDatabase
+        var num = 0
+        var cursor = db.rawQuery(sql, arrayOf(classId,time))
+        cursor.moveToFirst()
+        if(!cursor.isAfterLast){
+            num = cursor.getInt(0) // num 次数
+            cursor.moveToNext()
+        }
+        num++
+        Log.v(TAG,"num"+num)
+        return num
+    }
+
+    fun getGpaNum(classId: String,time: String): Int{
+        var sql = "select count() from ${GPALIST} where classId = ? and substr(time,1,10) = ?;"
+        var db = readableDatabase
+        var num = 0
+        var cursor = db.rawQuery(sql, arrayOf(classId,time))
+        cursor.moveToFirst()
+        if(!cursor.isAfterLast){
+            num = cursor.getInt(0) // num 次数
+            cursor.moveToNext()
+        }
+        num++
+        Log.v(TAG,"num"+num)
+        return num
+    }
+
+    fun getTestNum(classId: String,time: String): Int{
+        var sql = "select count() from ${TESTLIST} where classId = ? and substr(time,1,10) = ?;"
         var db = readableDatabase
         var num = 0
         var cursor = db.rawQuery(sql, arrayOf(classId,time))
@@ -315,6 +559,9 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         return true
     }
 
+    /**
+     * 删除考勤记录
+     */
     fun delete_signInList(id: String,classId: String,no: String) {
         var db = writableDatabase
         /*
@@ -326,6 +573,22 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
          */
         db.delete(STUSIGNINLIST,"id = ?", arrayOf(id))
     }
+
+    /**
+     * 删除课堂表现记录
+     */
+    fun delete_gpaList(id: String,classId: String,no: String) {
+        var db = writableDatabase
+        /*
+            删除学生签到信息
+         */
+        db.delete(GPAINFO,"classId = ? and no = ?", arrayOf(classId,no))
+        /*
+            删除签到记录
+         */
+        db.delete(GPALIST,"id = ?", arrayOf(id))
+    }
+
 
     /**
      * 更新学生签到详表
@@ -343,7 +606,57 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
     }
 
     /**
-     * 查询数据
+     * 更新学生课堂表现详表
+     */
+    fun updata_gpaInfo(da: StuSignInInfo): Boolean{
+        var db = writableDatabase
+        var cv = ContentValues()
+        if(da.type!=null) { // 不为空
+            cv.put(GpaInfoCell[3], da.type)
+            db.update(GPAINFO, cv, "stuId = ? and no = ?", arrayOf(da.stuId,da.no))
+        }else{
+            return false
+        }
+        return true
+    }
+
+    /**
+     * 更新学生实验表现详表
+     */
+    fun updata_testInfo(da: StuSignInInfo): Boolean{
+        var db = writableDatabase
+        var cv = ContentValues()
+        if(da.type!=null) { // 不为空
+            cv.put(TestInfoCell[3], da.type)
+            db.update(TESTINFO, cv, "stuId = ? and no = ?", arrayOf(da.stuId,da.no))
+        }else{
+            return false
+        }
+        return true
+    }
+
+
+    fun queryHisoryList() : ArrayList<HistoryItem>{
+        val sql = "select $STUSIGNINLIST.classId,$CLASSINFO.className,$STUSIGNINLIST.time,$STUSIGNINLIST.num,$STUSIGNINLIST.info from $STUSIGNINLIST,$CLASSINFO WHERE $STUSIGNINLIST.classId = $CLASSINFO.classId"
+        var db = readableDatabase
+        var data = ArrayList<HistoryItem>()
+        var cursor = db.rawQuery(sql,null)
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = HistoryItem()
+            da.classId = cursor.getString(0) // classId 班级编号
+            da.className = cursor.getString(1) // 班级Name
+            da.time = cursor.getString(3) // time
+            da.num = cursor.getString(4) // num 当天次数
+            da.no = da.time.substring(0,10)+"("+da.num+")" // 考勤编号
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"考勤历史查询成功")
+        return data
+    }
+    /**
+     * 查询考勤数据
      */
     fun query_data_by_classId(classId: String): ArrayList<ArrayList<StudentInfo>>{
         // 先查通过班级编号查找班级列表
@@ -351,6 +664,33 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         var stuSign = arrayListOf<ArrayList<StudentInfo>>()
         for(s in list){
             stuSign.add(this.query_signInInfo_by_classId_and_no(s.classId!!,s.no!!))
+        }
+        return stuSign
+    }
+
+    /**
+     * 查询课堂表现数据
+     */
+    fun query_gpadata_by_classId(classId: String): ArrayList<ArrayList<StudentInfo>>{
+        // 先查通过班级编号查找班级列表
+        var list = this.query_gpaList_by_classId(classId)
+        var stuSign = arrayListOf<ArrayList<StudentInfo>>()
+        for(s in list){
+            stuSign.add(this.query_gpaInfo_by_classId_and_no(s.classId!!,s.no!!))
+        }
+        return stuSign
+    }
+
+
+    /**
+     * 查询实验表现数据
+     */
+    fun query_testdata_by_classId(classId: String): ArrayList<ArrayList<StudentInfo>>{
+        // 先查通过班级编号查找班级列表
+        var list = this.query_testList_by_classId(classId)
+        var stuSign = arrayListOf<ArrayList<StudentInfo>>()
+        for(s in list){
+            stuSign.add(this.query_testInfo_by_classId_and_no(s.classId!!,s.no!!))
         }
         return stuSign
     }
@@ -599,6 +939,60 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
         }
     }
 
+    /**
+     * 通过班级id获取班级总人数
+     */
+    fun getStuNumByClassId(classId: String): String{
+        val sql = "select count(${StuInfoCell[1]}) count from $STUINFO where ${StuInfoCell[3]} = ?"
+        var db = readableDatabase
+        var data = "0"
+        var cursor = db.rawQuery(sql, arrayOf(classId))
+        cursor.moveToFirst()
+        if(!cursor.isAfterLast){
+            data = cursor.getString(0) //
+
+        }
+        Log.v(TAG,"班级人数查询成功")
+        return data
+    }
+
+    /**
+     * 查询某个状态的人数和时间
+     */
+    fun query_cqInfo(classId: String,type: String = "出勤") : ArrayList<CqInfo>{
+        var sql = "select count(stuId) count, substr(${StuSignInInfoCell[4]},1,10) time from $STUSIGNININFO where ${StuSignInInfoCell[2]} = ? and ${StuSignInInfoCell[3]} = ? group by substr(${StuSignInInfoCell[4]},1,10)  ;"
+        var db = readableDatabase
+        var data = ArrayList<CqInfo>()
+        var cursor = db.rawQuery(sql, arrayOf(classId,type))
+        cursor.moveToFirst()
+        while(!cursor.isAfterLast){
+            var da = CqInfo(
+                    cursor.getString(0),  // 出勤人数
+                    cursor.getString(1), // 时间
+                    classId
+            )
+            data.add(da)
+            cursor.moveToNext()
+        }
+        Log.v(TAG,"出勤信息查询成功")
+        return data
+    }
+//
+//    /**
+//     * 日考勤次数查询
+//     */
+//    fun getDNumByTime(classId: String,time: String): String{
+//        val sql = "select count(*) count from $STUSIGNINLIST where ${StuSignInListCell[1]} = $classId and substr(${StuSignInListCell[2]},1,10) = ${time}"
+//        var db = readableDatabase
+//        var data = "0"
+//        var cursor = db.rawQuery(sql, null)
+//        cursor.moveToFirst()
+//        if(!cursor.isAfterLast){
+//            data = cursor.getString(0) //
+//        }
+//        Log.v(TAG,"日考勤次数查询成功")
+//        return data
+//    }
 
     fun cleanDataBase(){
         var db = writableDatabase

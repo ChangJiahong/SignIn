@@ -15,8 +15,8 @@ import com.demo.cjh.signin.Adapter.StuSignInListAdapter
 import kotlinx.android.synthetic.main.activity_sign_old.*
 import android.widget.TextView
 import com.demo.cjh.signin.FileUtil
-import com.demo.cjh.signin.`object`.StuSignInList
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StuSignInList
+import com.demo.cjh.signin.obj.StudentInfo
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.getValue
 import java.io.File
@@ -59,7 +59,7 @@ class SignOldActivity : AppCompatActivity() {
     private fun init() {
 
         classId = intent.getStringExtra("classId")
-        className = intent.getStringExtra("name")
+        className = intent.getStringExtra("className")
         title = className
 
 
@@ -313,12 +313,14 @@ class SignOldActivity : AppCompatActivity() {
         when(item!!.itemId){
             R.id.edit ->{
                 val MenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
-                val item = stuSignInLists[MenuInfo.position-1]
-                var classId = item.id
-                database.delete_signInList(item.id!!,item.classId!!,item.no!!)
-                Log.v(TAG,"移除"+item.info+"成功")
-                stuSignInLists.removeAt(MenuInfo.position-1)
-                stuSignInListAdapter!!.notifyDataSetChanged()
+                if(MenuInfo.position >0) {
+                    val item = stuSignInLists[MenuInfo.position - 1]
+                    var classId = item.id
+                    database.delete_signInList(item.id!!, item.classId!!, item.no!!)
+                    Log.v(TAG, "移除" + item.info + "成功")
+                    stuSignInLists.removeAt(MenuInfo.position - 1)
+                    stuSignInListAdapter!!.notifyDataSetChanged()
+                }
 
             }
         }

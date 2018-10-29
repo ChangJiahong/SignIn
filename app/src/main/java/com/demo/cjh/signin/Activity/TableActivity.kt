@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
@@ -20,13 +21,12 @@ import kotlinx.android.synthetic.main.activity_table.*
 import org.apache.poi.ss.usermodel.*
 import org.jetbrains.anko.*
 import java.io.File
-import java.net.URI
 import android.view.LayoutInflater
 import android.widget.EditText
 import com.demo.cjh.signin.FileUtil
-import com.demo.cjh.signin.`object`.ClassInfo
-import com.demo.cjh.signin.`object`.StudentInfo
-import com.demo.cjh.signin.`object`.TableInfo
+import com.demo.cjh.signin.obj.ClassInfo
+import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.obj.TableInfo
 import com.demo.cjh.signin.util.*
 
 /**
@@ -75,7 +75,14 @@ class TableActivity : AppCompatActivity() {
             var str = intent.dataString
             if(str != null){
                 var uri = Uri.parse(str)
-                var fin = File(URI(uri.toString()))
+                var path = ""
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {//4.4以后
+                    path = FileUtil.getPath(this, uri) ?:""
+                } else {//4.4以下下系统调用方法
+                    path = FileUtil.getRealPathFromURI(this, uri) ?:""
+                }
+
+                var fin = File(path)
                 file = fin
                 Log.v(TAG,"app外打开 --> "+fin.getDirPath()+"  --> "+fin.name)
 
@@ -110,7 +117,7 @@ class TableActivity : AppCompatActivity() {
             }
             Log.v(TAG, "关闭")
 
-            table_name.text = file!!.getFileName()
+            table_name.text = file.getFileName()
 
         }else{
 

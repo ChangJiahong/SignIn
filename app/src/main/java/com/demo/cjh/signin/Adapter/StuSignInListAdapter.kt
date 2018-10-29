@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.StuSignInList
+import com.demo.cjh.signin.obj.StuSignInList
 import org.jetbrains.anko.find
 
 /**

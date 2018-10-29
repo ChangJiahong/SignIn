@@ -76,7 +76,7 @@ class MyFragment : Fragment(), View.OnClickListener {
                 startActivity<SettingsActivity>()
             }
             R.id.tongji ->{
-                toast("功能尚未开放，尽请期待！")
+                startActivity<StatisticsActivity>()
             }
             R.id.guanyu ->{
                 startActivity<AboutMe>()

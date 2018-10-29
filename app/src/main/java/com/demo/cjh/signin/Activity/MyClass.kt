@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.widget.AdapterView
 import com.demo.cjh.signin.Fragment.MenuFragment
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.ClassInfo
+import com.demo.cjh.signin.obj.ClassInfo
 import com.demo.cjh.signin.util.database
 import kotlinx.android.synthetic.main.activity_my_class.*
 import org.jetbrains.anko.doAsync

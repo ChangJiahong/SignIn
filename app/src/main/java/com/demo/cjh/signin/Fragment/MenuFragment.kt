@@ -12,8 +12,8 @@ import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.TextView
-import com.demo.cjh.signin.Activity.SignOldActivity
-import com.demo.cjh.signin.`object`.ClassInfo
+import com.demo.cjh.signin.Activity.SelectActivity
+import com.demo.cjh.signin.obj.ClassInfo
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.generateRefID
@@ -74,9 +74,9 @@ class MenuFragment : Fragment() {
         adapter = MenuAdapter(data, activity!!)
         mListView.adapter = adapter
         mListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val intent = Intent(activity, SignOldActivity::class.java)
+            val intent = Intent(activity, SelectActivity::class.java)
             intent.putExtra("classId",data[position].classId)
-            intent.putExtra("name",data[position].className)
+            intent.putExtra("className",data[position].className)
             startActivity(intent)
         }
         registerForContextMenu(mListView)

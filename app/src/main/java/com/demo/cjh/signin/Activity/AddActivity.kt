@@ -4,7 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StudentInfo
 import kotlinx.android.synthetic.main.activity_add.*
 
 class AddActivity : AppCompatActivity() {

@@ -11,7 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.`object`.StudentInfo
+import com.demo.cjh.signin.obj.StudentInfo
 import com.demo.cjh.signin.util.SpeakUtil
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import org.jetbrains.anko.backgroundResource

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <stroke
+        android:color="#dbdedd"
+        android:width="1dp"
+        />
+
+    <corners
+        android:radius="3dp"
+        android:bottomLeftRadius="25dp"
+        android:bottomRightRadius="25dp"
+        android:topLeftRadius="25dp"
+        android:topRightRadius="25dp"
+        />
+
+    //solid 纯色填充
+    <solid
+        android:color="#eff5f3"
+        />
+    <padding
+        android:left="4dp"
+        android:bottom="10dp"
+        android:right="4dp"
+        android:top="4dp"
+        />
+
+    //size 固有宽度 高度
+</shape>

@@ -63,8 +63,9 @@ class MainActivity : AppCompatActivity() {
         val sp = App.app!!.sp!!
         val userid = sp.getString("userid","")
         var userToken = sp.getString("userToken","")
-        if (userid.isNullOrEmpty() && userToken.isNullOrEmpty()){
+        if (userid.isNullOrEmpty() || userToken.isNullOrEmpty()){
             // 空
+
             return
         }
         doAsync {

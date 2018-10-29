@@ -6,7 +6,7 @@ import com.arcsoft.facerecognition.AFR_FSDKError
 import com.arcsoft.facerecognition.AFR_FSDKFace
 import com.arcsoft.facerecognition.AFR_FSDKVersion
 import com.demo.cjh.signin.App
-import com.demo.cjh.signin.`object`.FaceRegist
+import com.demo.cjh.signin.obj.FaceRegist
 import java.io.*
 import java.util.ArrayList
 
@@ -18,12 +18,21 @@ class FaceDB {
     val TAG = "FaceDB"
 
     companion object {
+        //sdk 1.0版
+//        val appid = "4kX79nVx1cRBR4d7a4Rf2LrXAuDgkQ5qsjwETW29rvjz"
+//        val ft_key = "6YEhMtjkFyvA56ZrhzPgqau9qT13JUsFyCRR9m6jXg1o"
+//        val fd_key = "6YEhMtjkFyvA56ZrhzPgqauGzrGAnUBmR9uBa1tyUrvp"
+//        val fr_key = "6YEhMtjkFyvA56ZrhzPgqauQAFXNm3n1eYY1vpULdEdc"
+//        val age_key = "6YEhMtjkFyvA56ZrhzPgqav1yFqEaJXzw5LT1bof84q5"
+//        val gender_key = "6YEhMtjkFyvA56ZrhzPgqav98f6RgY1BSzPgckmGdGyU"
+
+        // sdk 1.2版 支持安卓8.1系统
         val appid = "4kX79nVx1cRBR4d7a4Rf2LrXAuDgkQ5qsjwETW29rvjz"
-        val ft_key = "6YEhMtjkFyvA56ZrhzPgqau9qT13JUsFyCRR9m6jXg1o"
-        val fd_key = "6YEhMtjkFyvA56ZrhzPgqauGzrGAnUBmR9uBa1tyUrvp"
-        val fr_key = "6YEhMtjkFyvA56ZrhzPgqauQAFXNm3n1eYY1vpULdEdc"
-        val age_key = "6YEhMtjkFyvA56ZrhzPgqav1yFqEaJXzw5LT1bof84q5"
-        val gender_key = "6YEhMtjkFyvA56ZrhzPgqav98f6RgY1BSzPgckmGdGyU"
+        val ft_key = "6YEhMtjkFyvA56ZrhzPgqau9qT199RzTkQaqsSSZZkTu"
+        val fd_key = "6YEhMtjkFyvA56ZrhzPgqauGzrGGgmJ4H4sxsnpM8x75"
+        val fr_key = "6YEhMtjkFyvA56ZrhzPgqaumeTJxMuGCjHDkjNqo6638"
+        val age_key = "6YEhMtjkFyvA56ZrhzPgqav1yFqKGxy1Wgx7i5J689Lq"
+        val gender_key = "6YEhMtjkFyvA56ZrhzPgqav98f6SaJnoA25siB1TdPJS"
     }
 
     public var mRegister = ArrayList<FaceRegist>()

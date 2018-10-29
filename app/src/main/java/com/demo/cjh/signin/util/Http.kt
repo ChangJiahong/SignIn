@@ -1,16 +1,11 @@
 package com.demo.cjh.signin.util
 
-import android.nfc.Tag
 import android.util.Log
-import org.json.JSONObject
 import java.io.*
 import java.net.*
-import android.R.attr.keySet
 import com.demo.cjh.signin.App
-import com.demo.cjh.signin.`object`.FaceRegist
 import java.util.*
-import android.R.attr.data
-import com.demo.cjh.signin.`object`.FaceData
+import com.demo.cjh.signin.obj.FaceData
 
 
 /**

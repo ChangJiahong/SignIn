@@ -8,9 +8,7 @@ import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.*
 import kotlinx.android.synthetic.main.activity_yun.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
 import org.json.JSONObject
 
 class YunActivity : AppCompatActivity(), View.OnClickListener {
@@ -32,6 +30,16 @@ class YunActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         if(!App.app!!.sp!!.getBoolean("isLogin",false)){
+            alert {
+                message = "还未登陆，先登陆试试！"
+                okButton {
+                    startActivity<LoginActivity>()
+                }
+                noButton {
+
+                }
+            }.show()
+
             toast("还未登陆，先登陆试试！")
 
             return

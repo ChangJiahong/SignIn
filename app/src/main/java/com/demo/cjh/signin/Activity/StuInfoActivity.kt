@@ -179,7 +179,7 @@ class StuInfoActivity : AppCompatActivity(), View.OnClickListener {
                             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
 
                                 if (ContextCompat.checkSelfPermission(this,
-                                                Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED){ //表示未授权时
+                                                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){ //表示未授权时
                                     //进行授权
                                     ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),1)
                                 }else{
