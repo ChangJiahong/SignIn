@@ -22,6 +22,7 @@ import com.arcsoft.facetracking.AFT_FSDKVersion
 import com.arcsoft.genderestimation.ASGE_FSDKFace
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
+import com.demo.cjh.signin.pojo.FaceRegist
 import com.demo.cjh.signin.util.FaceDB
 import com.guo.android_extend.java.AbsLoop
 import com.guo.android_extend.java.ExtByteArrayOutputStream
@@ -35,6 +36,9 @@ import org.jetbrains.anko.find
 import java.io.IOException
 import java.util.ArrayList
 
+/**
+ * 人脸检测界面
+ */
 class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, Camera.AutoFocusCallback , View.OnTouchListener {
 
     val TAG = "SignInByFace"
@@ -63,15 +67,15 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
     internal var mImageNV21: ByteArray? = null
 
     private var camera_switch: ImageButton? = null
-    private var faceAdapter: FaceAdapter? = null
+    private lateinit var faceAdapter: FaceAdapter
     private val stus = ArrayList<String>()
     private val stuIds = ArrayList<String>()
 
-    internal var mFRAbsLoop: FRAbsLoop? = null
+    internal lateinit var mFRAbsLoop: FRAbsLoop
     // 当前检测脸
-    internal var mAFT_FSDKFace: AFT_FSDKFace? = null
+    internal lateinit var mAFT_FSDKFace: AFT_FSDKFace
 
-    internal inner class FRAbsLoop : AbsLoop() {
+    internal inner class FRAbsLoop() : AbsLoop() {
 
         /**
          * AFR 人脸识别
@@ -81,7 +85,7 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
         var engine = AFR_FSDKEngine()
         // 保存人脸信息
         var mResult = AFR_FSDKFace()
-        var mResgist = App.mFaceDB.mRegister
+        var mResgist: ArrayList<FaceRegist> = App.getRegister()
         var face1: MutableList<ASAE_FSDKFace> = ArrayList()
         var face2: MutableList<ASGE_FSDKFace> = ArrayList()
 
@@ -94,6 +98,16 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
 
         override fun loop() {
             synchronized(this) {
+
+                if (mResgist.isEmpty()){
+                    alert {
+                        message = "没有搜索到脸库"
+                        positiveButton("确定"){
+                            finish()
+                        }
+                        isCancelable = false
+                    }.show()
+                }
 
                 if (mImageNV21 != null) {
 
@@ -189,9 +203,8 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
                             runOnUiThread {
                                 stus.add(mNameShow!!)
                                 stuIds.add(mId!!)
-                                stuIds
                                 Toast.makeText(applicationContext, "识别成功", Toast.LENGTH_SHORT).show()
-                                faceAdapter!!.notifyDataSetChanged()
+                                faceAdapter.notifyDataSetChanged()
                                 if(stuIds.size == mResgist.size){
                                     alert {
                                         message = "已录入脸库的学生全部签到完成"
@@ -207,23 +220,6 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
                             }
                         } else {
                             val mNameShow = "未识别"
-                            //                    DetecterActivity.this.runOnUiThread(new Runnable() {
-                            //                        @Override
-                            //                        public void run() {
-                            //                            mTextView.setAlpha(1.0f);
-                            //                            mTextView1.setVisibility(View.VISIBLE);
-                            //                            mTextView1.setText( gender + "," + age);
-                            //                            mTextView1.setTextColor(Color.RED);
-                            //                            mTextView.setText(mNameShow);
-                            //                            mTextView.setTextColor(Color.RED);
-                            //                            mImageView.setImageAlpha(255);
-                            //                            mImageView.setRotation(mCameraRotate);
-                            //                            if ( mCameraMirror) {
-                            //                                mImageView.setScaleY(-1);
-                            //                            }
-                            //                            mImageView.setImageBitmap(bmp);
-                            //                        }
-                            //                    });
                             runOnUiThread { Toast.makeText(applicationContext, "未识别", Toast.LENGTH_SHORT).show() }
 
                         }
@@ -249,6 +245,7 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
         mCameraID = if (intent.getIntExtra("Camera", 0) == 0) Camera.CameraInfo.CAMERA_FACING_BACK else Camera.CameraInfo.CAMERA_FACING_FRONT
         mCameraRotate = if (intent.getIntExtra("Camera", 0) == 0) 0 else 0
         mCameraMirror = intent.getIntExtra("Camera", 0) != 0
+
         //通过Resources获取
         val dm = resources.displayMetrics
         mWidth = dm.widthPixels
@@ -281,14 +278,14 @@ class SignInByFace : AppCompatActivity() , CameraSurfaceView.OnCameraListener, C
         Log.d(TAG, "AFT_FSDK_GetVersion:" + version.toString() + "," + err.code)
 
         mFRAbsLoop = FRAbsLoop()
-        mFRAbsLoop!!.start()
+        mFRAbsLoop.start()
 
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-        mFRAbsLoop!!.shutdown()
+        mFRAbsLoop.shutdown()
         val err = engine.AFT_FSDK_UninitialFaceEngine()
         Log.d(TAG, "AFT_FSDK_UninitialFaceEngine =" + err.code)
 

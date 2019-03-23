@@ -10,9 +10,10 @@ import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.demo.cjh.signin.Activity.Table2Activity
-import com.demo.cjh.signin.FileUtil
+import com.demo.cjh.signin.util.FileUtil
 
 import com.demo.cjh.signin.R
+import com.demo.cjh.signin.util.fileDirectoryPath
 import com.demo.cjh.signin.util.getLastTime
 import kotlinx.android.synthetic.main.fragment_file.*
 import org.jetbrains.anko.find
@@ -25,7 +26,7 @@ import java.util.*
 class FileFragment : Fragment() {
 
     private var fileDatas = ArrayList<Array<String>>()
-    private var adapter: FileAdapter? = null
+    private lateinit var adapter: FileAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,15 +46,20 @@ class FileFragment : Fragment() {
 
     private fun init() {
 
-        var datas = FileUtil.getFileList(FileUtil.fileDirectory,"xls","xlsx")
+
+        var datas = FileUtil.getFileList(context!!,context!!.fileDirectoryPath,"xls","xlsx")
         fileDatas.clear()
         for (file in datas){
             fileDatas.add(arrayOf(file.name, file.getLastTime()))
+            Log.v("FileView",file.name)
         }
 
         fileListView.emptyView = empty_view
+
         adapter = FileAdapter(fileDatas, activity!!)
+
         fileListView.adapter = adapter
+
         fileListView.onItemClick { p0, p1, p2, p3 ->
             val intent = Intent(activity, Table2Activity::class.java)
             intent.putExtra("filepath",fileDatas[p2][0])
@@ -68,11 +74,8 @@ class FileFragment : Fragment() {
             return position.toLong()
         }
 
-        var inflater : LayoutInflater? = null
+        private var inflater : LayoutInflater = LayoutInflater.from(context)
 
-        init {
-            inflater = LayoutInflater.from(context)
-        }
 
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -80,7 +83,7 @@ class FileFragment : Fragment() {
             var holder : Holder
             var v : View
             if(convertView == null){
-                v = inflater!!.inflate(R.layout.fragment_file_item,null)
+                v = inflater.inflate(R.layout.fragment_file_item,null)
                 holder = Holder(v)
                 v.tag = holder
             }else{
@@ -123,14 +126,14 @@ class FileFragment : Fragment() {
             R.id.edit ->{
                 val MenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
 
-                var file = File(FileUtil.fileDirectory+"/"+fileDatas[MenuInfo.position][0])
+                var file = File(context!!.fileDirectoryPath+"/"+fileDatas[MenuInfo.position][0])
                 Log.v("FileFragment",file.path)
                 if(file.exists()){
                     file.delete()
                     Log.v("Delete",file.name+" is deleted!")
                 }
                 fileDatas.removeAt(MenuInfo.position)
-                adapter!!.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
                 toast("删除成功")
 
             }

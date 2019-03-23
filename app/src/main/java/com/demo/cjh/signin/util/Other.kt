@@ -2,14 +2,21 @@ package com.demo.cjh.signin.util
 
 import android.content.Context
 import android.graphics.*
+import android.os.Environment
 import android.util.Log
-import com.demo.cjh.signin.obj.*
+import com.demo.cjh.signin.App
+import com.demo.cjh.signin.pojo.*
 import com.guo.android_extend.java.ExtByteArrayOutputStream
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.DateUtil
 import org.json.JSONArray
 import org.json.JSONObject
+import org.json.JSONStringer
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -25,7 +32,6 @@ import kotlin.experimental.and
  * 扩展函数文件
  */
 
-
 /**
  * excel列扩展，获得单元格内容
  */
@@ -38,7 +44,7 @@ fun Cell.getValue() = when(this.cellType){
             str = SimpleDateFormat("yyyy-MM-dd").format(DateUtil.getJavaDate(this.getNumericCellValue()))
             Log.v("DATE123",str)
         } else { // 纯数字
-            str = this.getNumericCellValue().toString()
+            str = BigDecimal(this.numericCellValue.toString()).toPlainString()
         }
         Log.v("DATE123",str)
         //this.getNumericCellValue().toString()
@@ -46,6 +52,10 @@ fun Cell.getValue() = when(this.cellType){
     }
     else -> this.getStringCellValue().toString()
 }
+
+/**
+ * 扩展文件名
+ */
 /**
  * 文件扩展名
  */
@@ -66,24 +76,72 @@ fun File.getFileName() = this.getFullName().substringBeforeLast(".")
 /**
  * 文件最后访问时间
  */
-fun File.getLastTime() = SimpleDateFormat("yyyy-MM-dd hh:mm").format(Date(this.lastModified()))
+fun File.getLastTime() = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date(this.lastModified()))
 
 
-fun getNow(): String{
-    var df = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
-    var nowTime = df.format(Date()) // 当前系统时间 | 年月天
-    return nowTime
+/**
+ * 扩展文件路径
+ */
+val Context.appRoot: File
+    get() = if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState()) {
+        Environment.getExternalStorageDirectory()
+    } else {
+        this.filesDir
+    }
+
+val Context.appRootDirectoryPath: String
+    get() = "${appRoot.absolutePath}/SignIn"
+
+val Context.fileDirectoryPath: String
+    get() = "$appRootDirectoryPath/file_recv"
+
+val Context.imageDirectoryPath: String
+    get() = "$appRootDirectoryPath/images"
+
+
+/**
+ * 时间类扩展
+ */
+fun Date.toStringFormat(str: String = "yyyy-MM-dd HH:mm") : String{
+    var df = SimpleDateFormat(str)
+    return df.format(this)
 }
 
-fun getNow(str: String): String{
+fun String.parseDate(str: String = "yyyy-MM-dd HH:mm:ss") : Date{
+    val df = SimpleDateFormat(str)
+    return df.parse(this)
+}
+
+fun getNow(str: String = "yyyy-MM-dd HH:mm:ss"): String{
     var df = SimpleDateFormat(str)
     var nowTime = df.format(Date()) // 当前系统时间 | 年月天
     return nowTime
 }
 
+/** 保存方法 */
+fun Bitmap.saveToPNG(path: String) {
+    val f = File(path)
+    if (f.exists()) {
+        f.delete()
+    }
+    try {
+        val out = FileOutputStream(f)
+        this.compress(Bitmap.CompressFormat.PNG, 90, out)
+        out.flush()
+        out.close()
+    } catch (e: FileNotFoundException) {
+        e.printStackTrace()
+    } catch (e: IOException) {
+        e.printStackTrace()
+    }
+}
+
+
 val Context.database: MyDatabaseOpenHelper
     get() = MyDatabaseOpenHelper.getInstence(applicationContext)
 
+val Context.app: App
+    get() = App.app
 
 /**
  * 生成班级编号
@@ -95,6 +153,10 @@ fun generateRefID(): String {
     return sdf.format(now)
 }
 
+fun getOnlyID(): String{
+    val uuid = UUID.randomUUID()
+    return uuid.toString().replace("-", "")
+}
 
 fun NV21_to_bitmap(data: ByteArray): Bitmap? {
     val yuv = YuvImage(data, ImageFormat.NV21, 100 , 100, null)
@@ -107,8 +169,8 @@ fun NV21_to_bitmap(data: ByteArray): Bitmap? {
 
 fun getreslut(jsonString: String): Result{
     val jsonObject = JSONObject(jsonString)
-
-    return Result(jsonObject.getInt("status"),jsonObject.getString("message"),jsonObject.getString("data"))
+    
+    return Result(jsonObject.getInt("status"),jsonObject.getString("msg"),jsonObject.getJSONObject("data").toString())
 }
 
 fun classInfoDateToJson(classInfoData: ArrayList<ClassInfo>) : JSONArray {
@@ -317,5 +379,4 @@ fun JsonToSignInData(json : String){
     val stuInfoArray = jsonObject.getJSONArray("stuInfos")
     val signInListArray = jsonObject.getJSONArray("signInList")
     val signInInfoArray = jsonObject.getJSONArray("signInInfos")
-
 }

@@ -1,5 +1,6 @@
 package com.demo.cjh.signin.Activity
 
+import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +10,10 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.Http.upPwd
-import com.demo.cjh.signin.util.getreslut
+import com.demo.cjh.signin.util.HttpHelper
+import com.demo.cjh.signin.util.doHttp
 import kotlinx.android.synthetic.main.activity_up_pwd.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
-import org.jetbrains.anko.uiThread
 
 class UpPwd : AppCompatActivity() {
 
@@ -38,8 +37,8 @@ class UpPwd : AppCompatActivity() {
                             InputMethodManager.HIDE_NOT_ALWAYS);
         }
 
-        Log.v(TAG,"pwd ="+App.app!!.user.pwd+"  ppp = "+oldPwd.text)
-        if(oldPwd.text.toString() == App.app!!.user.pwd){
+        Log.v(TAG,"pwd ="+App.app.user.pwd+"  ppp = "+oldPwd.text)
+        if(oldPwd.text.toString() == App.app.user.pwd){
             if(newPwd.text.toString() == aPwd.text.toString()){
                 if(newPwd.text.length in 8..16){
 
@@ -47,25 +46,31 @@ class UpPwd : AppCompatActivity() {
                         if(newPwd.text.toString() != oldPwd.text.toString()) {
                             progressView.visibility = View.VISIBLE
 
-                            doAsync {
-                                val newpwd = newPwd.text.toString()
-                                var resultString = upPwd(newpwd)
-                                uiThread {
+                            doHttp {
+                                url = HttpHelper.alterPwd
+                                params {
+                                    "pwd"-newPwd.text.toString()
+                                }
+                                success { status, msg, data ->
                                     progressView.visibility = View.GONE
-                                    var result = getreslut(resultString)
-                                    if (result.status == 1) {
-                                        val sp = App.app!!.sp!!
-                                        sp.edit().apply {
-
-                                            putString("pwd", newpwd)
+                                    if (status == 200){
+                                        toast("修改成功")
+                                        val sp = App.app.sp
+                                        sp.edit().apply{
+                                            putString("pwd",newPwd.text.toString())
                                             apply()
                                         }
-                                        toast("修改成功")
                                         finish()
+                                    }else{
+                                        toast(msg)
                                     }
                                 }
+                                error {
+                                    progressView.visibility = View.GONE
+                                    toast("修改失败$it")
+                                }
+                            }.start()
 
-                            }
                         }else{
                             aPwd.error = "新密码不能与原密码相同"
                             aPwd.requestFocus()

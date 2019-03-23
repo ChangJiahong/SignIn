@@ -42,7 +42,7 @@
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask" />
         <activity android:name=".Activity.SignInActivity" />
-        <activity android:name=".Activity.StuTableActivity" />
+        <activity android:name=".Activity.AddStuActivity" />
         <activity
             android:name=".Activity.StuListActivity"
             android:configChanges="orientation|screenSize" />
@@ -91,14 +91,19 @@
             android:name=".Activity.RegisterActivity"
             android:theme="@style/NoTitleTheme1" />
         <activity android:name=".Activity.HistoryActivity" />
-        <activity android:name=".Activity.ClassActivity" />
         <activity android:name=".Activity.SelectActivity" />
         <activity android:name=".Activity.GPAActivity" />
         <activity android:name=".Activity.GListActivity" />
         <activity android:name=".Activity.TestListActivity" />
         <activity android:name=".Activity.TestActivity" />
         <activity android:name=".Activity.StatisticsActivity" />
-        <activity android:name=".Activity.StatisticsClassActivity"></activity>
+        <activity android:name=".Activity.StatisticsClassActivity" />
+        <activity
+            android:name=".Activity.RecordActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".Activity.OldListActivity" />
+        <activity android:name=".Activity.RecordSaveMsg" />
+        <activity android:name=".Activity.AddTypeActivity"></activity>
     </application>
 
 </manifest>

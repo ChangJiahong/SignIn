@@ -5,7 +5,7 @@ import java.io.*
 import java.net.*
 import com.demo.cjh.signin.App
 import java.util.*
-import com.demo.cjh.signin.obj.FaceData
+import com.demo.cjh.signin.pojo.FaceData
 
 
 /**
@@ -145,7 +145,7 @@ object Http {
     fun uploadImage(params: Map<String,String>, fileFormName: String = "image", uploadFile: File, newFileName: String? = uploadFile.name,urlStr: String) : String{
 
 
-        val sb = StringBuilder()
+        val sb = StringBuffer()
 
         /**
 

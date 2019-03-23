@@ -11,13 +11,16 @@ import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.Http
+import com.demo.cjh.signin.util.HttpHelper
+import com.demo.cjh.signin.util.doHttp
+import com.google.gson.JsonObject
+import com.google.gson.internal.LinkedTreeMap
 import kotlinx.android.synthetic.main.activity_login.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.doAsyncResult
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import org.json.JSONObject
 import java.net.SocketTimeoutException
+import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
@@ -38,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun init() {
 
-        val sp = App.app!!.sp!!
+        val sp = App.app.sp
 
         _account  = sp.getString("userid","")
         _password = sp.getString("pwd","")
@@ -69,15 +72,15 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if(TextUtils.isEmpty(account.text)){
-                account.error = "手机号不为空"
+                account.error = "邮箱不为空"
                 focusView = account
                 cancel = true
             }else if(TextUtils.isEmpty(password.text)){
                 password.error = "密码不为空"
                 focusView = password
                 cancel = true
-            }else if(!isMobileNO(_account)){
-                account.error = "手机号不正确"
+            }else if(!isEmail(_account)){
+                account.error = "不是有效的邮箱账号"
                 focusView = account
                 cancel = true
             }
@@ -88,8 +91,53 @@ class LoginActivity : AppCompatActivity() {
 
                 showProgress(true)
 
-                val loginTask = LoginTask()
-                loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, _account,_password)
+                doHttp {
+                    url = HttpHelper.login
+                    params {
+                        "username"-_account
+                        "password"-_password
+                    }
+                    success { status, msg, data ->
+                        //
+                        when(status){
+                            200 ->{
+                                toast("登陆成功")
+
+                                val js = data as LinkedTreeMap<String, String>
+                                val name = data["name"]
+                                val userToken = data["token"]
+                                val imgUrl = data["img"]
+
+                                sp.edit().apply {
+                                    putString("userId", _account)
+                                    putString("name", name)
+                                    putString("token", userToken)
+                                    putString("img", imgUrl)
+                                    putString("pwd", _password)
+                                    putBoolean("isLogin", true)
+                                    apply()
+                                }
+                                setResult(Activity.RESULT_OK)
+                                finish()
+                            }
+                            else ->{
+                                // 登陆失败
+                                toast(msg)
+                                sp.edit().apply {
+                                    putBoolean("isLogin", false)
+                                    apply()
+                                }
+                            }
+                        }
+                    }
+                    error {
+                        runOnUiThread {
+                            toast("服务器错误，错误码：$it")
+                        }
+                    }
+                }.start()
+                //val loginTask = LoginTask()
+               // loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, _account,_password)
 
 
             }
@@ -110,71 +158,16 @@ class LoginActivity : AppCompatActivity() {
         return m.matches()
     }
 
-    inner class LoginTask : AsyncTask<String, Void, String>() {
-        override fun doInBackground(vararg params: String?): String {
-            Thread.sleep(3000)
-            Log.v(TAG,params.first()!!)
 
-            try {
-
-                var jsonString = Http.login_by_pwd(userid = params[0]!!,pwd = params[1]!!)
-                return jsonString
-            } catch (e: SocketTimeoutException){
-                return "timeOut"
-            }
-
-
-        }
-
-        override fun onPostExecute(result: String?) {
-            super.onPostExecute(result)
-            showProgress(false)
-
-            Log.v(TAG, result!!)
-            if (result.equals("timeOut")) {
-                // 服务器响应超时
-                toast("服务器响应超时")
-
-            } else {
-                var jsonObject = JSONObject(result!!)
-                var status = jsonObject.getInt("status")
-                when (status) {
-                    1 -> {
-                        // 登陆成功
-                        toast("登陆成功")
-                        var data = jsonObject.getString("data")
-                        var jsonObject = JSONObject(data)
-                        var name = jsonObject.getString("name")
-                        var userToken = jsonObject.getString("userToken")
-                        var imgUrl = jsonObject.getString("imgUrl")
-                        var sp = App.app!!.sp!!
-                        sp.edit().apply {
-                            putString("userid", _account)
-                            putString("name", name)
-                            putString("userToken", userToken)
-                            putString("imgUrl", imgUrl)
-                            putString("pwd", _password)
-                            putBoolean("isLogin", true)
-                            apply()
-                        }
-                        setResult(Activity.RESULT_OK)
-                        finish()
-
-                    }
-                    0 -> {
-                        // 登陆失败
-                        var msg = jsonObject.getString("message")
-                        toast(msg)
-                        var sp = App.app!!.sp!!
-                        sp.edit().apply {
-                            putBoolean("isLogin", false)
-                            apply()
-                        }
-                    }
-                }
-
-            }
-        }
-
+    fun isEmail(string: String?): Boolean {
+        if (string == null)
+            return false
+        val regEx1 = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$"
+        val p: Pattern
+        val m: Matcher
+        p = Pattern.compile(regEx1)
+        m = p.matcher(string)
+        return m.matches()
     }
+
 }

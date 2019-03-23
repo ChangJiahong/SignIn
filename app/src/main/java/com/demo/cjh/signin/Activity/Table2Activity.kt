@@ -14,11 +14,8 @@ import android.view.*
 import com.bin.david.form.data.format.draw.TextDrawFormat
 import com.bin.david.form.data.table.ArrayTableData
 import com.demo.cjh.signin.*
-import com.demo.cjh.signin.FileUtil
-import com.demo.cjh.signin.obj.StudentInfo
-import com.demo.cjh.signin.util.getDirPath
-import com.demo.cjh.signin.util.getSuffex
-import com.demo.cjh.signin.util.getValue
+import com.demo.cjh.signin.pojo.StudentInfo
+import com.demo.cjh.signin.util.*
 import kotlinx.android.synthetic.main.activity_table2.*
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.jetbrains.anko.*
@@ -56,7 +53,7 @@ class Table2Activity : AppCompatActivity() {
     private fun init() {
 
         var filename = intent.getStringExtra("filepath")
-        file = File(FileUtil.fileDirectory + "/"+filename)
+        file = File("$fileDirectoryPath/$filename")
         Log.v(TAG,"app内打开 --> "+file!!.getDirPath()+"  --> "+file!!.name)
 
 
@@ -78,7 +75,6 @@ class Table2Activity : AppCompatActivity() {
                         var tableData = ArrayTableData.create(table, "Excel表", data, TextDrawFormat<String>())
 
                         table.tableData = tableData
-
 
                     }
 

@@ -15,11 +15,12 @@ import android.widget.EditText
 import android.widget.TextView
 import com.demo.cjh.loadinglayoutlib.LoadingLayout
 import com.demo.cjh.signin.Adapter.StuSignInListAdapter
-import com.demo.cjh.signin.FileUtil
+import com.demo.cjh.signin.util.FileUtil
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.StuSignInList
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.pojo.StuSignInList
+import com.demo.cjh.signin.pojo.StudentInfo
 import com.demo.cjh.signin.util.database
+import com.demo.cjh.signin.util.fileDirectoryPath
 import com.demo.cjh.signin.util.getValue
 import kotlinx.android.synthetic.main.activity_glist.*
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -79,7 +80,7 @@ class GListActivity : AppCompatActivity() {
 
         listView.addHeaderView(vHead)
 
-        stuSignInListAdapter = StuSignInListAdapter(stuSignInLists,this@GListActivity)
+//        stuSignInListAdapter = StuSignInListAdapter(stuSignInLists,this@GListActivity)
         listView.adapter = stuSignInListAdapter
 
         listView.setOnItemClickListener { parent, view, position, id ->
@@ -187,7 +188,7 @@ class GListActivity : AppCompatActivity() {
 
                     positiveButton("是"){
                         fileName = editText.text.toString()
-                        var filePath = FileUtil.fileDirectory+"/"+fileName+"."+ FileUtil.XLS
+                        var filePath = fileDirectoryPath+"/"+fileName+"."+ FileUtil.XLS
                         var newFile = File(filePath)
                         if(newFile.exists()){
                             toast("文件名重复！！导出失败")
@@ -222,7 +223,7 @@ class GListActivity : AppCompatActivity() {
         mProgressDialog.show()
         doAsync {
 
-            var filePath = FileUtil.fileDirectory + "/" + fileName + "." + FileUtil.XLS
+            var filePath = fileDirectoryPath + "/" + fileName + "." + FileUtil.XLS
             var newFile = File(filePath)
             if (!newFile.exists()) {
                 newFile.createNewFile()

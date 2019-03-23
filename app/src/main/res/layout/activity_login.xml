@@ -32,8 +32,8 @@
                 android:id="@+id/account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="手机号："
-                android:inputType="phone"
+                android:hint="邮箱："
+                android:inputType="textEmailAddress"
                 android:textColor="#000000"/>
             <EditText
                 android:id="@+id/password"

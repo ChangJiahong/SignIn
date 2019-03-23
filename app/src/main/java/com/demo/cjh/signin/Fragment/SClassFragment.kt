@@ -2,10 +2,6 @@ package com.demo.cjh.signin.Fragment
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.DisplayMetrics
@@ -14,7 +10,6 @@ import android.view.*
 import android.widget.*
 import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.format.IFormat
-import com.bin.david.form.data.format.bg.ICellBackgroundFormat
 import com.bin.david.form.data.style.FontStyle
 import com.bin.david.form.data.table.TableData
 import com.daivd.chart.utils.DensityUtils
@@ -25,11 +20,8 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.uiThread
-import android.support.v4.content.ContextCompat
-import com.bin.david.form.data.CellInfo
-import com.bin.david.form.data.format.bg.BaseBackgroundFormat
-import com.demo.cjh.signin.obj.ClassInfo
-import com.demo.cjh.signin.obj.CqInfo
+import com.demo.cjh.signin.pojo.ClassInfo
+import com.demo.cjh.signin.pojo.CqInfo
 import com.demo.cjh.signin.util.database
 import java.io.Serializable
 import java.text.SimpleDateFormat

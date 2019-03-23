@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,19 +13,23 @@ import com.demo.cjh.signin.*
 import com.demo.cjh.signin.Adapter.StuSignInListAdapter
 import kotlinx.android.synthetic.main.activity_sign_old.*
 import android.widget.TextView
-import com.demo.cjh.signin.FileUtil
-import com.demo.cjh.signin.obj.StuSignInList
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.util.FileUtil
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.getValue
 import java.io.File
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.jetbrains.anko.*
 import android.os.Build
-import com.demo.cjh.signin.FileUtil.getPath
-import com.demo.cjh.signin.FileUtil.getRealPathFromURI
+import com.demo.cjh.signin.util.FileUtil.getPath
+import com.demo.cjh.signin.util.FileUtil.getRealPathFromURI
+import com.demo.cjh.signin.pojo.*
+import com.demo.cjh.signin.service.impl.RecordServiceImpl
+import com.demo.cjh.signin.service.impl.StuServiceImpl
+import com.demo.cjh.signin.util.fileDirectoryPath
 
-
+/**
+ * 考勤记录页面
+ */
 class SignOldActivity : AppCompatActivity() {
 
     val TAG = "SignOldActivity"
@@ -37,17 +40,22 @@ class SignOldActivity : AppCompatActivity() {
     /**
      * 数据对象
      */
-    val stuSignInLists = ArrayList<StuSignInList>()
-    val stuData = ArrayList<StudentInfo>()
-    var stuSignInListAdapter: StuSignInListAdapter? = null
+    val stuSignInLists = ArrayList<OldListItem>()
+    val stuData = ArrayList<StuInfo>()
+    lateinit var stuSignInListAdapter: StuSignInListAdapter
 
     var mProgressDialog: ProgressDialog? = null
 
-    var addStuByHand: Button? = null // 手动添加数据
-    var addStuByFile: Button? = null // 文件导入
+    lateinit var addStuByHand: Button // 手动添加数据
+    lateinit var addStuByFile: Button // 文件导入
 
     var classId=""
     var className=""
+    var typeId = ""
+
+
+    lateinit var stuService: StuServiceImpl
+    lateinit var recordService: RecordServiceImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,40 +68,61 @@ class SignOldActivity : AppCompatActivity() {
 
         classId = intent.getStringExtra("classId")
         className = intent.getStringExtra("className")
+        typeId = intent.getStringExtra("typeId")
         title = className
 
 
+        // 配置服务
+        stuService = StuServiceImpl(this)
+        recordService = RecordServiceImpl(this)
+
+        /**
+         * 手动添加学生信息配置
+         */
         addStuByHand = empty_view.find(R.id.byHand)
         addStuByFile = empty_view.find(R.id.byFile)
-        addStuByHand!!.setOnClickListener {
+        addStuByHand.setOnClickListener {
             startActivity<TableActivity>("classId" to classId,"className" to className)
         }
-        addStuByFile?.setOnClickListener {
+        addStuByFile.setOnClickListener {
             val intent =  Intent(Intent.ACTION_GET_CONTENT)
-            //intent.setType(“image/*”);//选择图片
-            //intent.setType(“audio/*”); //选择音频
-            //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-            //intent.setType(“video/*;image/*”);//同时选择视频和图片
-            intent.type = "application/vnd.ms-excel"//无类型限制
+            intent.type = "application/vnd.ms-excel"//Excel类型限制
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             startActivityForResult(intent,REQUEST_REGION_PICK)
         }
 
+        /**
+         * 配置头view
+         */
         var vHead = View.inflate(this@SignOldActivity, R.layout.stu_sign_in_list_item, null)
         val text = vHead.find<TextView>(R.id.info)
         val text1 = vHead.find<TextView>(R.id.time)
         text1.text = ""
         text.text = "新建点名"
 
+        /**
+         * 添加头view
+         */
         OldList.addHeaderView(vHead)
 
+        /**
+         * 初始化适配器
+         */
         stuSignInListAdapter = StuSignInListAdapter(stuSignInLists,this@SignOldActivity)
         OldList.adapter = stuSignInListAdapter
 
+        // 显示空
         showEmpty(false)
-        // 更新数据
-        Task().execute(classId)
 
+
+        // 更新数据
+        // Task().execute(classId)
+        initUIData()
+
+
+        /**
+         * item list点击事件
+         */
         OldList.setOnItemClickListener { parent, view, position, id ->
 
             when(position){
@@ -101,22 +130,47 @@ class SignOldActivity : AppCompatActivity() {
                     val intent = Intent(this@SignOldActivity,StuListActivity::class.java)
                     intent.putExtra("classId",classId)
                     intent.putExtra("className",className)
-                    intent.putExtra("type",0)
+                    intent.putExtra("action",0)
                     startActivity(intent)
                 }
                 else ->{
                     val intent = Intent(this@SignOldActivity,StuListActivity::class.java)
                     intent.putExtra("classId",classId)
                     intent.putExtra("className",className)
-                    intent.putExtra("type",1)
-                    intent.putExtra("no",stuSignInLists[position-1].no)
+                    intent.putExtra("action",1)
+                    // intent.putExtra("no",stuSignInLists[position-1].no)
                     startActivity(intent)
                 }
             }
         }
+        /**
+         * 菜单注册
+         */
         registerForContextMenu(OldList)
 
 
+    }
+
+    private fun initUIData() {
+        doAsync {
+            stuData.clear()
+            stuData.addAll(stuService.getStuInfosByClassId(classId))
+            if(stuData.isEmpty()){
+                uiThread {
+                    showEmpty(true)
+                }
+            }else {
+                var data = recordService.getListByClassIdAndTypeId(classId,typeId) as ArrayList<OldListItem>
+                data.reverse()
+                stuSignInLists.clear()
+                stuSignInLists.addAll(data)
+                uiThread {
+                    // 刷新
+                    stuSignInListAdapter.notifyDataSetChanged()
+                }
+
+            }
+        }
     }
 
 
@@ -125,22 +179,31 @@ class SignOldActivity : AppCompatActivity() {
         view.setVisibility(if (show) View.GONE else View.VISIBLE)
     }
 
+/*
+    inner class Task : AsyncTask<String, Void, ArrayList<OldListItem>>() {
+        override fun doInBackground(vararg params: String?): ArrayList<OldListItem>? {
 
-    inner class Task : AsyncTask<String, Void, ArrayList<StuSignInList>>() {
-        override fun doInBackground(vararg params: String?): ArrayList<StuSignInList>? {
+            // 更新数据
 
+            var classId = params.first()!!
+            var typeId = ""
+
+            //stuData.clear()
+            // stuData.addAll(database.query_stuInfo_by_classId(params.first()!!))
+            //TODO：构建stu服务层
             stuData.clear()
-            stuData.addAll(database.query_stuInfo_by_classId(params.first()!!))
+            stuData.addAll(stuService.getStusByClassId(classId))
+
             if(stuData.isEmpty()){
                 //showEmpty(true)
                 return null
             }else {
-                return database.query_signInList_by_classId(params.first()!!)
+                return recordService.getListByClassIdAndTypeId(classId,typeId) as ArrayList<OldListItem>?
             }
 
         }
 
-        override fun onPostExecute(result: ArrayList<StuSignInList>?) {
+        override fun onPostExecute(result: ArrayList<OldListItem>?) {
             super.onPostExecute(result)
 
             if(result != null){
@@ -158,7 +221,7 @@ class SignOldActivity : AppCompatActivity() {
 
     }
 
-
+*/
 
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -166,6 +229,7 @@ class SignOldActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    // TODO: 导出Excel 待重构
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item!!.itemId){
             R.id.out ->{
@@ -184,7 +248,7 @@ class SignOldActivity : AppCompatActivity() {
 
                     positiveButton("是"){
                         fileName = editText.text.toString()
-                        var filePath = FileUtil.fileDirectory+"/"+fileName+"."+ FileUtil.XLS
+                        var filePath = "$fileDirectoryPath/$fileName.${FileUtil.XLS}"
                         var newFile = File(filePath)
                         if(newFile.exists()){
                             toast("文件名重复！！导出失败")
@@ -202,6 +266,10 @@ class SignOldActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * 导出记录
+     * TODO: 待重构
+     */
     fun export(fileName: String){
         // TODO: 查询表中所有数据，保存
         // 表头，根据表头插入数据
@@ -219,7 +287,7 @@ class SignOldActivity : AppCompatActivity() {
         mProgressDialog!!.setMessage("正在努力导出中...")
         mProgressDialog!!.show()
         doAsync {
-            var filePath = FileUtil.fileDirectory+"/"+fileName+"."+ FileUtil.XLS
+            var filePath = "$fileDirectoryPath/$fileName.${FileUtil.XLS}"
             var newFile = File(filePath)
             if(!newFile.exists()){
                 newFile.createNewFile()
@@ -242,7 +310,7 @@ class SignOldActivity : AppCompatActivity() {
              */
             for(i in 0..(stuSignInLists.size-1)){
                 cell = headRow.createCell(i+2)
-                cell.setCellValue(stuSignInLists[i].time!!.substring(0,10)+"("+stuSignInLists[i].num+")")
+                cell.setCellValue(stuSignInLists[i].time)
             }
 
             /**
@@ -253,7 +321,7 @@ class SignOldActivity : AppCompatActivity() {
                 var cell = row.createCell(0)
                 cell.setCellValue(stuData[i-1].stuId)
                 cell = row.createCell(1)
-                cell.setCellValue(stuData[i-1].name)
+                cell.setCellValue(stuData[i-1].stuName)
             }
 
             /**
@@ -308,6 +376,7 @@ class SignOldActivity : AppCompatActivity() {
 
     /**
      * 上下文菜单Item点击方法
+     * 删除
      */
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         when(item!!.itemId){
@@ -315,11 +384,23 @@ class SignOldActivity : AppCompatActivity() {
                 val MenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
                 if(MenuInfo.position >0) {
                     val item = stuSignInLists[MenuInfo.position - 1]
-                    var classId = item.id
-                    database.delete_signInList(item.id!!, item.classId!!, item.no!!)
-                    Log.v(TAG, "移除" + item.info + "成功")
-                    stuSignInLists.removeAt(MenuInfo.position - 1)
-                    stuSignInListAdapter!!.notifyDataSetChanged()
+
+                    //TODO:删除记录
+
+                    // database.delete_signInList(item.id!!, item.classId!!, item.no!!)
+                    doAsync {
+
+                        var re = recordService.deleteListByClassIdAndTitleAndTypeId(classId,item.title,typeId)
+
+                        Log.v(TAG, "移除" + item.title + "成功")
+
+                        uiThread {
+                            stuSignInLists.removeAt(MenuInfo.position - 1)
+                            stuSignInListAdapter.notifyDataSetChanged()
+                        }
+                    }
+
+
                 }
 
             }
@@ -332,7 +413,8 @@ class SignOldActivity : AppCompatActivity() {
 
         showEmpty(false)
         // 更新数据
-        Task().execute(classId)
+        //Task().execute(classId)
+        initUIData()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

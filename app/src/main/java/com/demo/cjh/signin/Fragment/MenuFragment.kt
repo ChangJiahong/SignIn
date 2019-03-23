@@ -3,52 +3,43 @@ package com.demo.cjh.signin.Fragment
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.*
 import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.TextView
 import com.demo.cjh.signin.Activity.SelectActivity
-import com.demo.cjh.signin.obj.ClassInfo
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.database
-import com.demo.cjh.signin.util.generateRefID
+import com.demo.cjh.signin.pojo.Classes
+import com.demo.cjh.signin.service.IClassesService
+import com.demo.cjh.signin.service.impl.ClassesServiceImpl
+import com.demo.cjh.signin.util.*
 import kotlinx.android.synthetic.main.fragment_menu.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
+import org.jetbrains.anko.support.v4.startActivity
 import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.uiThread
 import kotlin.collections.ArrayList
 
 
+/**
+ * 主页，点名页面
+ */
 class MenuFragment : Fragment() {
 
     val TAG = "MenuFragment"
-    companion object {
 
-        private var fragment: MenuFragment? = null
+    lateinit var adapter: MenuAdapter
+    var data = ArrayList<Classes>()
 
-        @JvmStatic
-        fun getInstance(): MenuFragment {
-
-            if (fragment == null) {
-                fragment = MenuFragment()
-            }
-            return fragment!!
-        }
-    }
-
-
-    var adapter: MenuAdapter? = null
-    var data = ArrayList<ClassInfo>()
+    lateinit var classesService: IClassesService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_menu, container, false)
     }
 
@@ -59,13 +50,16 @@ class MenuFragment : Fragment() {
 
     private fun init() {
 
-        //var data = arrayListOf<String>("软件工程一班","网络工程一班","网络工程二班","计科一班","计科二班","计科三班","计科四班")
+        classesService = ClassesServiceImpl(activity!!)
+
         doAsync {
             data.clear()
-            data.addAll(activity!!.database.query_classInfo())
+
+            data.addAll(classesService.getAllClasses())
+
             uiThread {
                 // 更新数据
-                adapter!!.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
             }
         }
 
@@ -74,13 +68,14 @@ class MenuFragment : Fragment() {
         adapter = MenuAdapter(data, activity!!)
         mListView.adapter = adapter
         mListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val intent = Intent(activity, SelectActivity::class.java)
-            intent.putExtra("classId",data[position].classId)
-            intent.putExtra("className",data[position].className)
-            startActivity(intent)
+            var item = data[position]
+            startActivity<SelectActivity>("classId" to item.classId , "className" to item.className)
         }
         registerForContextMenu(mListView)
 
+        /**
+         * 添加班级
+         */
         add_btn.setOnClickListener {
             var view = LayoutInflater.from(activity).inflate(R.layout.table_dialog, null)
             var inputName = view.find<EditText>(R.id.inputName)
@@ -90,22 +85,45 @@ class MenuFragment : Fragment() {
                     .setView(view)
                     .setPositiveButton("确定"){ dialogInterface: DialogInterface, i: Int ->
                         //toast(inputName.text.toString()+"\n"+inputInfo.text+"\n"+generateRefID())
-
+                        var className = inputName.text.toString()
+                        var info = inputInfo.text.toString()
+                        var institute = ""// 二级学院
+                        var speciality = ""// 学校
                         if(inputName.text.toString().isEmpty()){
                             toast("班级名不能为空！")
                         }else {
-                            doAsync {
-                                var classInfo = ClassInfo(generateRefID(), inputName.text.toString(), inputInfo.text.toString())
-                                activity!!.database.insert_classInfo(classInfo)
-                                data.clear()
-                                data.addAll(activity!!.database.query_classInfo())
-                                uiThread {
-                                    // 更新数据
-                                    adapter!!.notifyDataSetChanged()
-                                    Log.v(TAG, "刷新")
+
+                            var classes: Classes? = null
+
+//                            TransactionManager(activity!!).noTransaction.error {
+//
+//                            }.success {
+//
+//                            }.run {
+//
+//                            }.start()
+
+                            TransactionManager(activity!!).start(object : TransactionManager.DoTransactionListener{
+                                override fun run() {
+                                    classes = classesService.saveClasses(className,info,institute,speciality)
                                 }
 
-                            }
+                                override fun error(e: android.database.SQLException) {
+                                    toast("创建班级失败")
+                                }
+
+                                override fun success() {
+                                    if(classes != null){
+                                        toast("创建班级成功！")
+                                        data.add(classes!!)
+                                        adapter.notifyDataSetChanged()
+                                    }else{
+                                        toast("创建班级失败")
+                                    }
+                                }
+
+                            })
+
                         }
                     }
                     .setNegativeButton("取消"){ dialogInterface: DialogInterface, i: Int ->
@@ -128,16 +146,38 @@ class MenuFragment : Fragment() {
 
     /**
      * 上下文菜单Item点击方法
+     * 删除班级
      */
     override fun onContextItemSelected(item: MenuItem?): Boolean {
         when(item!!.itemId){
             R.id.edit ->{
                 val MenuInfo = item.menuInfo as AdapterView.AdapterContextMenuInfo
-                var classId = data[MenuInfo.position].classId
-                activity!!.database.delete_class(classId!!)
-                Log.v(TAG,"移除"+data[MenuInfo.position].className+"成功")
-                data.removeAt(MenuInfo.position)
-                adapter!!.notifyDataSetChanged()
+                var item = data[MenuInfo.position]
+
+                // 删除班级所有信息
+                TransactionManager(activity!!).start(object : TransactionManager.DoTransactionListener{
+                    /**
+                     * 数据库操作
+                     */
+                    override fun run() {
+                        classesService.deleteClassesByClassId(item.classId)
+                    }
+                    /**
+                     * 失败回调
+                     */
+                    override fun error(e: android.database.SQLException) {
+                       toast("删除失败")
+                    }
+                    /**
+                     * 成功回调
+                     */
+                    override fun success() {
+                        toast("删除成功")
+                        data.removeAt(MenuInfo.position)
+                        adapter.notifyDataSetChanged()
+                    }
+
+                })
 
             }
         }
@@ -146,16 +186,12 @@ class MenuFragment : Fragment() {
 
 
 
-    class MenuAdapter(val data : List<ClassInfo>, val context : Context) : BaseAdapter() {
+    class MenuAdapter(val data : List<Classes>, val context : Context) : BaseAdapter() {
         override fun getItemId(position: Int): Long {
             return position.toLong()
         }
 
-        var inflater : LayoutInflater? = null
-
-        init {
-            inflater = LayoutInflater.from(context)
-        }
+        var inflater : LayoutInflater = LayoutInflater.from(context)
 
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -163,7 +199,7 @@ class MenuFragment : Fragment() {
             var holder : Holder
             var v : View
             if(convertView == null){
-                v = inflater!!.inflate(R.layout.fragment_menu_item,null)
+                v = inflater.inflate(R.layout.fragment_menu_item,null)
                 holder = Holder(v)
                 v.tag = holder
             }else{
@@ -172,7 +208,8 @@ class MenuFragment : Fragment() {
             }
             val mItem = data[position]
             holder.textView.text = mItem.className
-            holder.time.text = mItem.time?.substringBeforeLast(":")
+            holder.time.text = mItem.createTime
+
             if (mItem.info.isNullOrEmpty()){
                 holder.info.visibility = View.GONE
             }else {
@@ -182,7 +219,7 @@ class MenuFragment : Fragment() {
             return v
         }
 
-        override fun getItem(position: Int): ClassInfo? {
+        override fun getItem(position: Int): Classes? {
             return this.data[position]
         }
 

@@ -38,7 +38,11 @@ public class OfflineResource {
     public OfflineResource(Context context, String voiceType) throws IOException {
         context = context.getApplicationContext();
         this.assets = context.getApplicationContext().getAssets();
-        this.destPath = FileUtil.createTmpDir(context);
+
+        this.destPath = FileUtil.INSTANCE.createTmpDir(context);
+
+//        this.destPath = FileUtil.createTmpDir(context);
+
         setOfflineVoiceType(voiceType);
     }
 
@@ -77,7 +81,8 @@ public class OfflineResource {
         if (existed == null || !existed) {
             recover = true;
         }
-        FileUtil.copyFromAssets(assets, sourceFilename, destFilename, recover);
+        FileUtil.INSTANCE.copyFromAssets(assets, sourceFilename, destFilename, recover);
+//        FileUtil.copyFromAssets(assets, sourceFilename, destFilename, recover);
         Log.i(TAG, "文件复制成功：" + destFilename);
         return destFilename;
     }

@@ -5,10 +5,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.preference.PreferenceManager
-import com.demo.cjh.signin.obj.User
-import com.demo.cjh.signin.util.FaceDB
+import com.demo.cjh.signin.pojo.FaceRegist
+import com.demo.cjh.signin.pojo.User
 import com.demo.cjh.signin.util.MyDatabaseOpenHelper
 import com.demo.cjh.signin.util.database
+import java.util.ArrayList
 
 /**
  * Created by CJH
@@ -19,26 +20,53 @@ class App : Application() {
 
     companion object {
 
+        lateinit var app: App
 
-        public var app: App? = null
-        internal var mFaceDB = FaceDB()
+        private var mRegister = ArrayList<FaceRegist>()
 
-        var mImage: Uri? = null
+        private var mImage: Uri? = null
 
         fun setCaptureImage(uri: Uri?) {
             mImage = uri
         }
 
-        fun getCaptureImage(): Uri {
-            return mImage!!
+        fun getCaptureImage(): Uri? {
+            return mImage
+        }
+
+        fun setRegister (regists: ArrayList<FaceRegist>){
+            mRegister.clear()
+            mRegister.addAll(regists)
+        }
+        fun getRegister (): ArrayList<FaceRegist> {
+            return mRegister
         }
 
     }
 
-    var sp: SharedPreferences? = null
-    var dsp: SharedPreferences? = null
-    var db: MyDatabaseOpenHelper? = null
-    var ip: String? = null
+    lateinit var sp: SharedPreferences
+    lateinit var dsp: SharedPreferences
+    lateinit var db: MyDatabaseOpenHelper
+
+    var ip: String = ""
+
+    val login
+            get() = "$ip/login"
+
+    var downTables = "$ip/downTables"
+
+    var upTables = "$ip/upTables"
+
+    var upTypeImg = "$ip/file/upTypeImg"
+
+    var upUserImg = "$ip/file/upUserImg"
+
+    var alterName = "$ip/alterName"
+
+    var alterPwd = "$ip/alterPwd"
+
+    var upFaceFiles = "$ip/file/upFaceFiles"
+
     var user = User()
 
 
@@ -48,8 +76,16 @@ class App : Application() {
         sp = applicationContext.getSharedPreferences("config", Context.MODE_PRIVATE)
         dsp = PreferenceManager.getDefaultSharedPreferences(this)
         db = database
-        ip = resources.getString(R.string.ip)
 
+//        readeDb = db.readableDatabase
+//        writeDb = db.writableDatabase
+//        classesDao = ClassesDaoImpl(readeDb,writeDb)
+//        recordDao = RecordDaoImpl(readeDb,writeDb)
+//        stuDao = StuDaoImp(readeDb,writeDb)
+//
+//        classesService = ClassesServiceImpl(classesDao,recordDao,stuDao)
+//        stuService = StuServiceImpl()
 
     }
+
 }

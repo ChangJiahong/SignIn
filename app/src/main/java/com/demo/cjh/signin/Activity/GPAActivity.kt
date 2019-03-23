@@ -8,11 +8,11 @@ import com.bin.david.form.data.column.Column
 import com.bin.david.form.data.format.draw.ImageResDrawFormat
 import com.bin.david.form.data.table.TableData
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.pojo.StudentInfo
 import com.demo.cjh.signin.util.database
 import org.jetbrains.anko.doAsync
 import com.bin.david.form.utils.DensityUtils
-import com.demo.cjh.signin.obj.GPAItem
+import com.demo.cjh.signin.pojo.GPAItem
 import kotlinx.android.synthetic.main.activity_gpa.*
 import org.jetbrains.anko.uiThread
 import android.util.DisplayMetrics
@@ -21,7 +21,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.widget.EditText
 import com.bin.david.form.data.format.count.ICountFormat
-import com.demo.cjh.signin.obj.StuSignInList
+import com.demo.cjh.signin.pojo.StuSignInList
 import com.demo.cjh.signin.util.getNow
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.find
@@ -329,7 +329,7 @@ class GPAActivity : AppCompatActivity() {
 
 
 
-    inner class Icount<T>(var setCountS:(count: Long) -> String) :ICountFormat<T,Long>{
+    public class Icount<T>(var setCountS:(count: Long) -> String) :ICountFormat<T,Long>{
         var cou = 0L
 
 
@@ -338,7 +338,7 @@ class GPAActivity : AppCompatActivity() {
                 is Boolean ->{
                     if (t == true) {
                         cou += 1
-                        Log.v(TAG,"+1=$cou")
+//                        Log.v(TAG,"+1=$cou")
                     }
                 }
                 is String ->{
@@ -348,7 +348,7 @@ class GPAActivity : AppCompatActivity() {
         }
 
         override fun getCount(): Long {
-            Log.v(TAG,"+2")
+//            Log.v(TAG,"+2")
             return cou
         }
 

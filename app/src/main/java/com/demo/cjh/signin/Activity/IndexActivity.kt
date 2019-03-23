@@ -2,28 +2,24 @@ package com.demo.cjh.signin.Activity
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.nfc.Tag
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.demo.cjh.signin.util.FileUtil
+import com.demo.cjh.signin.R
+import org.jetbrains.anko.startActivity
+import android.os.StrictMode
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
-import com.demo.cjh.signin.FileUtil
-import com.demo.cjh.signin.R
-import org.jetbrains.anko.startActivity
-import java.util.ArrayList
-import android.widget.Toast
 import com.demo.cjh.signin.App
-import com.demo.cjh.signin.util.Http
-import org.jetbrains.anko.doAsync
-import org.json.JSONObject
-import java.net.SocketTimeoutException
-import android.os.StrictMode
-
-
+import com.demo.cjh.signin.util.HttpHelper
+import com.demo.cjh.signin.util.doHttp
+import java.util.ArrayList
 
 
 class IndexActivity : AppCompatActivity() {
+
+    var isp = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,21 +30,41 @@ class IndexActivity : AppCompatActivity() {
             StrictMode.setThreadPolicy(policy)
         }
 
+
+        initPermission()  // 申请权限
+
+        doHttp {
+            url = "https://cjh.pythong.top/ip/"
+            requestMethod = "GET"
+            doOutput = false
+            success { status, msg, data ->
+                if (status == 200){
+                    Log.d("index","ip : ${data.toString()}")
+                    HttpHelper.IP = data.toString()
+                    App.app.ip = data.toString()
+
+                    Log.d("index","App changed : ${ HttpHelper.IP}")
+                    Log.d("index","login changed : ${ HttpHelper.login}   ${App.app.login}")
+                    Log.d("index","downTables changed : ${ HttpHelper.downTables}")
+                }
+            }
+        }.start()
+
+
         object :Thread(){
             override fun run() {
                 // 初始化app
-                FileUtil.initFile()
-                initPermission()  // 申请权限
-
+                FileUtil.initFile(this@IndexActivity)
 
                 sleep(3000)
                 //startActivity<LoginActivity>()
+                while (isp!=0){}
+
                 startActivity<MainActivity>()
                 finish()
             }
         }.start()
     }
-
 
 
     /**
@@ -74,37 +90,42 @@ class IndexActivity : AppCompatActivity() {
             }
         }
         val tmpList = arrayOfNulls<String>(toApplyList.size)
+        isp = toApplyList.size
+        Log.v("权限注册",""+isp)
         if (!toApplyList.isEmpty()) {
+
             ActivityCompat.requestPermissions(this, toApplyList.toTypedArray(), 123)
             Log.v("Index","请求权限")
         }
 
     }
-
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         // 此处为android 6.0以上动态授权的回调，用户自行实现。
-        when(requestCode){
-            123 ->{
+        when (requestCode) {
+            123 -> {
                 for (i in 0 until grantResults.size) {
 
                     val grantResult = grantResults[i]
                     val s = permissions[i]
                     if (grantResult == PackageManager.PERMISSION_GRANTED) { //这个是权限拒绝
-                        Log.v("Index",s + "权限申请成功")
+                        Log.v("Index", s + "权限申请成功")
+
                         //Toast.makeText(this, s + "权限申请成功", Toast.LENGTH_SHORT).show()
                     } else { //授权成功了
                         //do Something
-                        Log.v("Index",s + "权限被拒绝了")
+                        Log.v("Index", s + "权限被拒绝了")
                         //Toast.makeText(this, s + "权限被拒绝了", Toast.LENGTH_SHORT).show()
                     }
+                    isp -= 1
+                    Log.v("权限",""+isp)
                 }
-
             }
         }
 
-
-
     }
+
+
+
+
 
 }

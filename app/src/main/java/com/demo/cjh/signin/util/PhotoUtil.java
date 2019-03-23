@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 
@@ -194,27 +193,8 @@ public class PhotoUtil {
         File file = null;
         long tag = System.currentTimeMillis();
 
-        path = FileUtil.imageDirectory + "/"+tag+".png";
+        path = OtherKt.getImageDirectoryPath(context) + "/"+tag+".png";
 
-//        if(Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
-//            //SDCard是否可用
-//            /*
-//            path = Environment.getExternalStorageDirectory() + File.separator +"myimages/";
-//            file = new File(path);
-//            if(!file.exists()){
-//                file.mkdirs();
-//            }
-//            path = Environment.getExternalStorageDirectory() + File.separator +"myimages/"+ tag + ".png";
-//            */
-//            path = SDCardUtil.getPhotosPath()+tag+".png";
-//        }else{
-//            path = context.getFilesDir() + File.separator +"myimages/";
-//            file = new File(path);
-//            if(!file.exists()){
-//                file.mkdirs();
-//            }
-//            path = context.getFilesDir() + File.separator +"myimages/"+ tag + ".png";
-//        }
         return path;
     }
 

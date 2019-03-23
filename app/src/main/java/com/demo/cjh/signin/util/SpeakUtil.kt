@@ -72,13 +72,13 @@ class SpeakUtil(var context: Context){
      * MessageListener 仅仅用log.i记录日志，在logcat中可以看见
      * FileSaveListener 在UiMessageListener的基础上，使用 onSynthesizeDataArrived回调，获取音频流
      */
-    public fun initialTts(): Boolean {
+    public fun initialTts(msg: MessageListener = MessageListener()): Boolean {
         LoggerProxy.printable(true) // 日志打印在logcat中
         // 设置初始化参数
 
         Log.d("My",offlineVoice)
         // 此处可以改为 含有您业务逻辑的SpeechSynthesizerListener的实现类
-        val listener = MessageListener()
+        val listener = msg
 
         val params = getParams()
 

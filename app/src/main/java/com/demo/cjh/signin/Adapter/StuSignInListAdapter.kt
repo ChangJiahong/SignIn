@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.StuSignInList
+import com.demo.cjh.signin.pojo.OldListItem
+import com.demo.cjh.signin.pojo.StuSignInList
+import com.demo.cjh.signin.util.parseDate
+import com.demo.cjh.signin.util.toStringFormat
 import org.jetbrains.anko.find
+import org.w3c.dom.Text
 
 /**
  * Created by CJH
  * on 2018/6/29
  */
-class StuSignInListAdapter(val data : List<StuSignInList>, val context : Context) : BaseAdapter() {
+class StuSignInListAdapter(val data : List<OldListItem>, val context : Context) : BaseAdapter() {
 
     var inflater : LayoutInflater? = null
 
@@ -34,8 +38,12 @@ class StuSignInListAdapter(val data : List<StuSignInList>, val context : Context
             v = convertView
             holder = v.tag as Holder
         }
-        holder.info.text = data[position].info
-        holder.time.text = data[position].time
+        val item = data[position]
+        holder.title.text = item.title
+        holder.time.text = item.time.parseDate().toStringFormat()
+        holder.stime.text = item.stime
+        holder.info.text = item.info
+        holder.subject.text = item.subject
 
         return v
     }
@@ -53,8 +61,11 @@ class StuSignInListAdapter(val data : List<StuSignInList>, val context : Context
     }
 
     class Holder(v :View) {
-        var info = v.find<TextView>(R.id.info)
-        var time = v.find<TextView>(R.id.time)
+        val title = v.find<TextView>(R.id.title)
+        val time = v.find<TextView>(R.id.time)
+        val stime = v.find<TextView>(R.id.stime)
+        val info = v.find<TextView>(R.id.info)
+        val subject = v.find<TextView>(R.id.subject)
     }
     val TAG = "StuSignInListAdapter"
 }
