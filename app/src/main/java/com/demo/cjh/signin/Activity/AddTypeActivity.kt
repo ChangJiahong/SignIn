@@ -112,12 +112,10 @@ class AddTypeActivity : AppCompatActivity() {
         // 本地存在
         if (!type.img.isNullOrEmpty()) {
             imgUrl = type.img
-            if (imgUrl.startsWith("http")) {
-                Glide.with(this@AddTypeActivity).load(imgUrl).into(mImg)
-            }else{
-                val f = File(imgUrl)
-                Glide.with(this@AddTypeActivity).load(f).into(mImg)
-            }
+
+            val f = File(imgUrl)
+            Glide.with(this@AddTypeActivity).load(f).into(mImg)
+
         }else{
             imgUrl = ""
             bitmap = drowText("默")
@@ -257,7 +255,6 @@ class AddTypeActivity : AppCompatActivity() {
                 // type服务
                 doService {
                     run {
-                        // TODO: 上传图片  路径 -> imgUrl
 
                         type.img = imgUrl
                         // 上传之后 存入返回的http图片路径
@@ -269,32 +266,6 @@ class AddTypeActivity : AppCompatActivity() {
                             typeService.updateType(type)
                         }
 
-                        if (!imgUrl.startsWith("http")){
-                            // 表示路径不是网络路径需要上传
-                            // 上传班级id typeid 指定更新的图片
-                            val re = HttpHelper().uploadFile(url = HttpHelper.upTypeImg,files = arrayListOf(imgUrl),params = mapOf<String,String>(Pair("classId",classId), Pair("typeId",type.cId)).toMutableMap())
-                            // 返回json字符 包括了图片http地址
-                            Log.d("http", "上传图片：$re")
-                            if (re.isNotEmpty()){
-                                val result = Gson().fromJson(re, Result::class.java)  //getreslut(json)
-                                if (result.status == 200){
-                                    type.img = result.data.toString()
-                                    // 更新url
-                                    type.classId = classId
-                                    typeService.updateType(type)
-
-                                }else{
-                                    // Exception("上传图片失败！！")
-                                    runOnUiThread {
-                                        toast("上传type图片失败！msg:${result.msg}")
-                                    }
-
-                                }
-                            }
-                            //type.img = imgUrl
-
-
-                        }
                         // 先创建type
 
                     }
@@ -374,10 +345,6 @@ class AddTypeActivity : AppCompatActivity() {
      */
     fun startImg() {
         val intent =  Intent(Intent.ACTION_GET_CONTENT)
-        //intent.setType(“image/*”);//选择图片
-        //intent.setType(“audio/*”); //选择音频
-        //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-        //intent.setType(“video/*;image/*”);//同时选择视频和图片
         intent.type = "image/*"//
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         startActivityForResult(intent,1)

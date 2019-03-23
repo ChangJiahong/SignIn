@@ -32,28 +32,28 @@ class HttpHelper{
         var IP = ""
 
         val login
-                get() = "$IP/login"
+        get() = "$IP/login"
 
         val downTables
-                get() = "$IP/downTables"
+        get() = "$IP/downTables"
 
         val upTables
-                get() = "$IP/upTables"
+        get() = "$IP/upTables"
 
         val upTypeImg
-                get() = "$IP/file/upTypeImg"
+        get() = "$IP/file/upTypeImg"
 
         val upUserImg
-                get() = "$IP/file/upUserImg"
+        get() = "$IP/file/upUserImg"
 
         val alterName
-                get() = "$IP/alterName"
+        get() = "$IP/alterName"
 
         val alterPwd
-                get() = "$IP/alterPwd"
+        get() = "$IP/alterPwd"
 
         val upFaceFiles
-                get()= "$IP/file/upFaceFiles"
+        get()= "$IP/file/upFaceFiles"
 
     }
 
@@ -91,16 +91,14 @@ class HttpHelper{
      * 参数字符串
      */
     private val _content:String
-        get() {
-            return  if (_params.isNotEmpty()) _params.toQueryString() else content
-        }
+    get() {
+        return  if (_params.isNotEmpty()) _params.toQueryString() else content
+    }
 
 
     private lateinit var su: (status: Int,msg: String,data: Any?) -> Unit
 
-    private var er: (code: Int) -> Unit = {
-        Log.v("HttpHelper", "error code : $it")
-    }
+    private lateinit var er: (code: Int) -> Unit
 
     private var be = {
 
@@ -118,6 +116,7 @@ class HttpHelper{
 
     fun error(e: (code: Int) -> Unit): HttpHelper{
         er = e
+        Log.d("http","加载error")
         return this
     }
 
@@ -126,7 +125,16 @@ class HttpHelper{
         doAsync {
             Log.v("http","开启请求 url= $url")
             be()
-            val json: String = post()
+            var json: String = ""
+            try {
+                json = post()
+            } catch (e: Exception){
+                uiThread {
+                    er(6)
+                    Log.d("http", "错误6")
+                }
+                return@doAsync
+            }
             Log.d("http result",json)
             uiThread {
                 Log.v("http","请求结束")
@@ -158,41 +166,29 @@ class HttpHelper{
     }
 
 
-    private fun post(): String{
-        try {
-            val conn = createConn()
+    private fun post(): String {
+        val conn = createConn()
 
-            if (_content.isNotEmpty()) {
-                val out = conn.outputStream
-                out.write(_content.toByteArray())
-                out.flush()
-                out.close()
-            }
+        if (_content.isNotEmpty()) {
+            val out = conn.outputStream
+            out.write(_content.toByteArray())
+            out.flush()
+            out.close()
+        }
 
-            if(conn.responseCode == 200) {
-                val br = BufferedReader(InputStreamReader(conn.inputStream, "UTF-8"))
-                val sb = StringBuffer()
-                br.forEachLine {
-                    sb.append(it)
-                }
-                return sb.toString()
-            }else{
-                er(conn.responseCode)
+        if(conn.responseCode == 200) {
+            val br = BufferedReader(InputStreamReader(conn.inputStream, "UTF-8"))
+            val sb = StringBuffer()
+            br.forEachLine {
+                sb.append(it)
             }
+            return sb.toString()
+        }else{
+            throw java.lang.Exception("请求失败")
+        }
 
             //Log.v("http","data "+result)
-        } catch (e: UnsupportedEncodingException) {
-            e.printStackTrace()
-            Log.d("http", "错误4")
-        } catch (e: ProtocolException) {
-            e.printStackTrace()
-            Log.d("http", "错误1")
-        } catch (e: MalformedURLException) {
-            e.printStackTrace()
-            Log.d("http", "错误2")
-        } catch (e: KotlinNullPointerException){
-            e.printStackTrace()
-        }
+
         return ""
     }
 
@@ -235,9 +231,7 @@ class HttpHelper{
             val dos = DataOutputStream(outputSteam)
 
             /**
-
              * 普通的表单数据
-
              */
             val sbr = StringBuffer()
             for (key in params.keys) {
@@ -317,8 +311,8 @@ class HttpHelper{
     private fun <K, V> Map<K, V>.toQueryString(): String = this.map { "${it.key}=${it.value}" }.joinToString("&")
 }
 
-fun Context.doHttp(dos: HttpHelper.() -> Unit): HttpHelper{
-    return HttpHelper().apply{
+    fun Context.doHttp(dos: HttpHelper.() -> Unit): HttpHelper{
+        return HttpHelper().apply{
         dos()
-    }
-}
+        }
+        }

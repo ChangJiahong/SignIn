@@ -10,20 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
 
             <TextView
+                android:id="@+id/text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="第一次使用语音点名须知"
-                android:padding="10dp"
+                android:text=""
+
+                android:padding="15dp"
+                android:textSize="20dp"
                 android:background="@drawable/recycler_item_selector"/>
 
 
-        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

@@ -13,16 +13,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.Http.upName
-import com.demo.cjh.signin.util.HttpHelper
-import com.demo.cjh.signin.util.doHttp
-import com.demo.cjh.signin.util.getreslut
 import kotlinx.android.synthetic.main.activity_up_name.*
 import org.jetbrains.anko.alert
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
-import org.jetbrains.anko.uiThread
-import org.json.JSONObject
 
 class UpName : AppCompatActivity() {
 
@@ -106,30 +99,7 @@ class UpName : AppCompatActivity() {
         progressView.visibility = View.VISIBLE
 
 
-        doHttp {
-            url = HttpHelper.alterName
-            params {
-                "name"-name.text.toString()
-            }
-            success { status, msg, data ->
-                progressView.visibility = View.GONE
-                if (status == 200){
-                    toast("修改成功")
-                    sp.edit().apply{
-                        putString("name",name.text.toString())
-                        apply()
-                    }
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }else{
-                    toast(msg)
-                }
-            }
-            error {
-                progressView.visibility = View.GONE
-                toast("修改失败$it")
-            }
-        }.start()
+       // 修改姓名逻辑
 
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

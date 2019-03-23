@@ -92,7 +92,6 @@ class SelectActivity : AppCompatActivity(){
 
             when (position) {
                 types.size - 1 -> {
-                    // TODO：添加type
                     Log.d(TAG, "添加type")
                     startActivity<AddTypeActivity>(
                             "classId" to classId,
@@ -204,13 +203,10 @@ class SelectActivity : AppCompatActivity(){
                     holder.typeImg.setImageResource(R.drawable.add_type)
                 }
                 else ->{
-                    if (item.img.startsWith("http")) {
-                        Glide.with(context).load(item.img).into(holder.typeImg)
-                    }else{
-                        val f = File(item.img)
-                        Glide.with(context).load(f).into(holder.typeImg)
-                    }
-                    //Glide.with(context).load(item.img).into(holder.typeImg)
+
+                    val f = File(item.img)
+                    Glide.with(context).load(f).into(holder.typeImg)
+
                 }
             }
 

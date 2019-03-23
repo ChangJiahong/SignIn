@@ -15,14 +15,8 @@ import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.*
 import com.demo.cjh.signin.util.PhotoUtil.IMAGE_UNSPECIFIED
-import kotlinx.android.synthetic.main.activity_table2_item.view.*
 import kotlinx.android.synthetic.main.activity_user_info.*
-import kotlinx.android.synthetic.main.list_my_item.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
-import org.jetbrains.anko.uiThread
-import org.json.JSONObject
 import java.io.File
 
 
@@ -145,27 +139,7 @@ class UserInfo : AppCompatActivity() , View.OnClickListener{
                     // 裁剪图片处理结果
 
                     // 上传图片
-                    doHttp {
-                        url = HttpHelper.upUserImg
-                        files = arrayListOf(imgpath)
-                        success { status, msg, data ->
-                            if (status == 200) {
-                                val img = data.toString()
-                                sp.edit().apply {
-                                    putString("img", img)
-                                    apply()
-                                }
-                                //val bitmap = PhotoUtil.convertToBitmap(imgpath, PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH)
-                                if (img.isNotEmpty()) {
-                                    //tv2.setText(bitmap.getHeight()+"x"+bitmap.getWidth()+"图");
-                                    //user_image.setImageBitmap(bitmap)
-                                    Glide.with(this@UserInfo).load(img).into(user_image)
-                                }
-                            } else {
-                                toast("修改失败")
-                            }
-                        }
-                    }.upload()
+
                 }
 
                 2 ->{

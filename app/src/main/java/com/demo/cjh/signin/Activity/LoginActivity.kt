@@ -1,25 +1,14 @@
 package com.demo.cjh.signin.Activity
 
-import android.app.Activity
-import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.Http
-import com.demo.cjh.signin.util.HttpHelper
-import com.demo.cjh.signin.util.doHttp
-import com.google.gson.JsonObject
-import com.google.gson.internal.LinkedTreeMap
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
-import org.json.JSONObject
-import java.net.SocketTimeoutException
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -91,51 +80,8 @@ class LoginActivity : AppCompatActivity() {
 
                 showProgress(true)
 
-                doHttp {
-                    url = HttpHelper.login
-                    params {
-                        "username"-_account
-                        "password"-_password
-                    }
-                    success { status, msg, data ->
-                        //
-                        when(status){
-                            200 ->{
-                                toast("登陆成功")
+                // 登陆逻辑
 
-                                val js = data as LinkedTreeMap<String, String>
-                                val name = data["name"]
-                                val userToken = data["token"]
-                                val imgUrl = data["img"]
-
-                                sp.edit().apply {
-                                    putString("userId", _account)
-                                    putString("name", name)
-                                    putString("token", userToken)
-                                    putString("img", imgUrl)
-                                    putString("pwd", _password)
-                                    putBoolean("isLogin", true)
-                                    apply()
-                                }
-                                setResult(Activity.RESULT_OK)
-                                finish()
-                            }
-                            else ->{
-                                // 登陆失败
-                                toast(msg)
-                                sp.edit().apply {
-                                    putBoolean("isLogin", false)
-                                    apply()
-                                }
-                            }
-                        }
-                    }
-                    error {
-                        runOnUiThread {
-                            toast("服务器错误，错误码：$it")
-                        }
-                    }
-                }.start()
                 //val loginTask = LoginTask()
                // loginTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, _account,_password)
 

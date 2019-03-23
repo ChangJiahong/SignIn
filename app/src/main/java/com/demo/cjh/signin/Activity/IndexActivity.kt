@@ -1,7 +1,9 @@
 package com.demo.cjh.signin.Activity
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.demo.cjh.signin.util.FileUtil
@@ -14,12 +16,19 @@ import android.util.Log
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.util.HttpHelper
 import com.demo.cjh.signin.util.doHttp
+import com.demo.cjh.signin.util.getVersion
+import com.google.gson.internal.LinkedTreeMap
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.okButton
 import java.util.ArrayList
 
 
 class IndexActivity : AppCompatActivity() {
 
     var isp = -1
+
+    var versionOk = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,25 +39,72 @@ class IndexActivity : AppCompatActivity() {
             StrictMode.setThreadPolicy(policy)
         }
 
-
         initPermission()  // 申请权限
+
+        val sp = App.app.sp
+
 
         doHttp {
             url = "https://cjh.pythong.top/ip/"
             requestMethod = "GET"
             doOutput = false
+
+            error {
+                val nVersion = sp.getString("nVersion",getVersion(this@IndexActivity))
+                if (nVersion != getVersion(this@IndexActivity)){
+                    alert {
+                        title="提示"
+                        message = "检测到该应用版本太低，请至应用商店更新到最新版本后使用。"
+
+                        positiveButton("确定"){
+                            finish()
+                        }
+                    }.show()
+
+                }else {
+                    versionOk = true
+                }
+                Log.d("index", "错误")
+            }
+
             success { status, msg, data ->
                 if (status == 200){
-                    Log.d("index","ip : ${data.toString()}")
+                    val js = data as LinkedTreeMap<String, String>
+                    val ip = js["ip"]
+                    val v = js["version"]
+
+                    Log.d("index","ip : ${ip}")
+                    Log.d("index","v:$v")
+
+                    if (getVersion(this@IndexActivity) != v){
+
+                        val edit = sp.edit()
+                        edit.putString("nVersion",v)
+                        edit.apply()
+
+                        alert {
+                            title="提示"
+                            message = "检测到该应用版本太低，请至应用商店更新到最新版本后使用。"
+                            positiveButton("确定") {
+                                System.exit(0)
+                            }
+                        }.show()
+                    } else {
+                        versionOk = true
+                    }
+
                     HttpHelper.IP = data.toString()
                     App.app.ip = data.toString()
 
-                    Log.d("index","App changed : ${ HttpHelper.IP}")
-                    Log.d("index","login changed : ${ HttpHelper.login}   ${App.app.login}")
-                    Log.d("index","downTables changed : ${ HttpHelper.downTables}")
+
                 }
             }
         }.start()
+
+
+
+
+
 
 
         object :Thread(){
@@ -60,11 +116,18 @@ class IndexActivity : AppCompatActivity() {
                 //startActivity<LoginActivity>()
                 while (isp!=0){}
 
+                while (!versionOk){
+
+                }
+
                 startActivity<MainActivity>()
                 finish()
             }
         }.start()
     }
+
+
+
 
 
     /**

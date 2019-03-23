@@ -43,9 +43,7 @@
             android:launchMode="singleTask" />
         <activity android:name=".Activity.SignInActivity" />
         <activity android:name=".Activity.AddStuActivity" />
-        <activity
-            android:name=".Activity.StuListActivity"
-            android:configChanges="orientation|screenSize" />
+
         <activity android:name=".Activity.TableActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -59,11 +57,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.Table2Activity" />
-        <activity android:name=".Activity.AddActivity" />
-        <activity android:name=".Activity.SignOldActivity" />
-        <activity
-            android:name=".Activity.SettingsActivity"
-            android:label="@string/title_activity_settings" />
         <activity android:name=".Activity.AboutMe" />
         <activity
             android:name=".Activity.SignInByFace"
@@ -85,19 +78,10 @@
             android:name=".Activity.UpPwd"
             android:label="@string/title_activity_pwd" />
         <activity
-            android:name=".Activity.YunActivity"
-            android:label="@string/title_activity_yun" />
-        <activity
             android:name=".Activity.RegisterActivity"
             android:theme="@style/NoTitleTheme1" />
         <activity android:name=".Activity.HistoryActivity" />
         <activity android:name=".Activity.SelectActivity" />
-        <activity android:name=".Activity.GPAActivity" />
-        <activity android:name=".Activity.GListActivity" />
-        <activity android:name=".Activity.TestListActivity" />
-        <activity android:name=".Activity.TestActivity" />
-        <activity android:name=".Activity.StatisticsActivity" />
-        <activity android:name=".Activity.StatisticsClassActivity" />
         <activity
             android:name=".Activity.RecordActivity"
             android:configChanges="orientation|screenSize" />

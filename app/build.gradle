@@ -10,8 +10,8 @@ android {
         applicationId "com.demo.cjh.signin"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -93,22 +93,11 @@ dependencies {
 
     // 百度语音
 
-    //    implementation files('libs/com.baidu.tts_2.3.2.20180419_5a5fec8.jar')
 
     // 人脸识别
     implementation 'com.guo.android_extend:android-extend:1.0.1'
 
-    //    implementation files('libs/ageestimation.jar')
-
-    //    implementation files('libs/facedetection.jar')
-
-    //    implementation files('libs/facerecognition.jar')
-
-    //    implementation files('libs/facetracking.jar')
-
-    //    implementation files('libs/genderestimation.jar')
     implementation files('src/main/jniLibs/ageestimation.jar')
-    implementation files('src/main/jniLibs/com.baidu.tts_2.3.2.20180419_5a5fec8.jar')
     implementation files('src/main/jniLibs/facedetection.jar')
     implementation files('src/main/jniLibs/facerecognition.jar')
     implementation files('src/main/jniLibs/facetracking.jar')

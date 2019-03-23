@@ -15,8 +15,8 @@
 
     <string name="setting">设置</string>
     <string name="tongji">统计</string>
-    <string name="guanyu">关于我们</string>
-    <string name="bangzhu">帮助</string>
+    <string name="guanyu">关于我</string>
+    <string name="bangzhu">使用帮助</string>
     <string name="shiyong">使用条款与政策</string>
 
     <string name="sclass">班级汇总</string>

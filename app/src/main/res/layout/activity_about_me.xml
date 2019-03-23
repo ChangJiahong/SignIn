@@ -29,13 +29,13 @@
             android:padding="30dp"
             android:textSize="16dp"
             android:lineSpacingExtra="8dp"
-            android:text="作为SignIn的开发人员，这是我们的第一个完整的作品，我们十分努力的去完善每一个细节，给用户最好的体验，如果你觉得达到了您的要求，请给我们点赞。"/>
+            android:text="作为SignIn的开发人员，这是我的第一个完整的独立作品，我十分努力的去完善每一个细节，给用户最好的体验，如果你觉得达到了您的要求，请给我点赞。"/>
 
         <TextView
+            android:id="@+id/version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/t3"
-            android:layout_alignParentStart="true"
             android:gravity="center"
             android:text="version:1.0.0" />
 

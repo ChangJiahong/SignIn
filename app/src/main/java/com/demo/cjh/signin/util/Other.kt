@@ -1,6 +1,7 @@
 package com.demo.cjh.signin.util
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.*
 import android.os.Environment
 import android.util.Log
@@ -27,6 +28,24 @@ import kotlin.experimental.and
  * Created by CJH
  * on 2018/6/3
  */
+
+
+/**
+ * 获取版本信息 version
+ */
+
+fun getVersion(context: Context) : String{
+    val manager = context.packageManager;
+    var name = ""
+    try {
+        val info = manager.getPackageInfo(context.packageName, 0)
+        name = info.versionName
+    } catch (e : PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+    }
+    return name
+}
+
 
 /**
  * 扩展函数文件

@@ -95,14 +95,6 @@ class MenuFragment : Fragment() {
 
                             var classes: Classes? = null
 
-//                            TransactionManager(activity!!).noTransaction.error {
-//
-//                            }.success {
-//
-//                            }.run {
-//
-//                            }.start()
-
                             TransactionManager(activity!!).start(object : TransactionManager.DoTransactionListener{
                                 override fun run() {
                                     classes = classesService.saveClasses(className,info,institute,speciality)

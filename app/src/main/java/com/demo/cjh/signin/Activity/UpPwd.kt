@@ -1,6 +1,5 @@
 package com.demo.cjh.signin.Activity
 
-import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,10 +9,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.HttpHelper
-import com.demo.cjh.signin.util.doHttp
 import kotlinx.android.synthetic.main.activity_up_pwd.*
-import org.jetbrains.anko.toast
 
 class UpPwd : AppCompatActivity() {
 
@@ -46,30 +42,7 @@ class UpPwd : AppCompatActivity() {
                         if(newPwd.text.toString() != oldPwd.text.toString()) {
                             progressView.visibility = View.VISIBLE
 
-                            doHttp {
-                                url = HttpHelper.alterPwd
-                                params {
-                                    "pwd"-newPwd.text.toString()
-                                }
-                                success { status, msg, data ->
-                                    progressView.visibility = View.GONE
-                                    if (status == 200){
-                                        toast("修改成功")
-                                        val sp = App.app.sp
-                                        sp.edit().apply{
-                                            putString("pwd",newPwd.text.toString())
-                                            apply()
-                                        }
-                                        finish()
-                                    }else{
-                                        toast(msg)
-                                    }
-                                }
-                                error {
-                                    progressView.visibility = View.GONE
-                                    toast("修改失败$it")
-                                }
-                            }.start()
+                            // 修改密码逻辑
 
                         }else{
                             aPwd.error = "新密码不能与原密码相同"

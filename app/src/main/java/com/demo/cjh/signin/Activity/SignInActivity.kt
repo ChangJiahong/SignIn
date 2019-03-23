@@ -12,11 +12,9 @@ import android.view.View
 import android.widget.RadioButton
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.listener.MessageListener
 import com.demo.cjh.signin.pojo.StuInfo
 import com.demo.cjh.signin.service.ITypeService
 import com.demo.cjh.signin.service.impl.TypeServiceImpl
-import com.demo.cjh.signin.util.SpeakUtil
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.collections.forEachByIndex
@@ -47,7 +45,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
      */
     var nextFlag: Boolean = false
 
-    lateinit var speakUtil: SpeakUtil
+//    lateinit var speakUtil: SpeakUtil
 
     lateinit var typeId: String
 
@@ -94,34 +92,6 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         db_init()
 
         init_view()
-
-
-        doAsync {
-
-            while (!overView)
-
-            speakUtil = SpeakUtil.getInstance(this@SignInActivity)
-            if(speakUtil.synthesizer == null) {
-
-                if(!speakUtil.initialTts(msg)){
-                    // 加载初始化失败
-                    runOnUiThread {
-                        toast("鉴权失败，请检查网络稍后重试！")
-                    }
-
-                }else{
-                    runOnUiThread {
-                        if(nextFlag) {
-                            speack("开始点名:  ")
-                        }
-                        speack()
-                        initialButtons(true)
-                    }
-                }
-
-            }
-
-        }
 
     }
 
@@ -173,17 +143,19 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
                     if(nextFlag) {
                         if (index >= data.size - 1) {
                             toast("点完了")
-                            speack("点名结束")
+//                            speack("点名结束")
                         } else {
-//                            progress.visibility = View.VISIBLE
-//                            doAsync {
-//                                Thread.sleep(500)
-//                                runOnUiThread {
-//                                    showNext()
-//                                    progress.visibility = View.GONE
-//                                }
-//                            }
-                            showNext()
+                            progress.visibility = View.VISIBLE
+                            initialButtons(false)
+                            doAsync {
+                                Thread.sleep(500)
+                                runOnUiThread {
+                                    showNext()
+                                    initialButtons(true)
+                                    progress.visibility = View.GONE
+                                }
+                            }
+//                            showNext()
                         }
                     }
                 }
@@ -194,7 +166,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
                 show(index)
 
                 overView = true
-                initialButtons(false)
+                //initialButtons(false)
 
 
 
@@ -208,7 +180,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         when(v!!.id){
             R.id.last -> showLast()
             R.id.next -> showNext()
-            R.id.say_btn -> speack()
+//            R.id.say_btn -> speack()
         }
     }
 
@@ -241,7 +213,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             index--
             show(index)
         }
-        speack()
+//        speack()
 
     }
 
@@ -256,7 +228,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             index++
             show(index)
         }
-        speack()
+//        speack()
 
     }
 
@@ -289,49 +261,22 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         finish()
         return super.onOptionsItemSelected(item)
     }
+//
+//    fun speack(){
+//        if(!name.text.isEmpty()) {
+//            speack(name.text.toString())
+//        }
+//    }
+//    fun speack(text: String){
+//        if(speakFalg) {
+//            speakUtil.speak(text)
+//        }
+//    }
 
-    fun speack(){
-        if(!name.text.isEmpty()) {
-            speack(name.text.toString())
-        }
-    }
-    fun speack(text: String){
-        if(speakFalg) {
-            speakUtil.speak(text)
-        }
-    }
 
-    val msg = object : MessageListener(){
-
-        override fun onSynthesizeStart(utteranceId: String?) {
-            super.onSynthesizeStart(utteranceId)
-            runOnUiThread {
-                progress.visibility = View.VISIBLE
-            }
-        }
-        override fun onSynthesizeFinish(utteranceId: String?) {
-            super.onSynthesizeFinish(utteranceId)
-            runOnUiThread {
-                progress.visibility = View.GONE
-            }
-        }
-
-        override fun onSpeechStart(utteranceId: String?) {
-            super.onSpeechStart(utteranceId)
-            runOnUiThread {
-                initialButtons(false)
-            }
-
-        }
-
-        override fun onSpeechFinish(utteranceId: String?) {
-            super.onSpeechFinish(utteranceId)
-            runOnUiThread {
-                initialButtons(true)
-            }
-
-        }
-    }
+    /**
+     * 加载按钮
+     */
     private fun initialButtons(flag: Boolean) {
 
         btns.forEachByIndex {
@@ -344,10 +289,10 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        if(speakUtil != null) {
-            speakUtil.release()
-            //speakUtil = null
-            Log.d("My","Sign释放")
-        }
+//        if(speakUtil != null) {
+//            speakUtil.release()
+//            //speakUtil = null
+//            Log.d("My","Sign释放")
+//        }
     }
 }

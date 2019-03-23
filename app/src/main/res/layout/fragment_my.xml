@@ -13,16 +13,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
-                layout="@layout/list_my_item"/>
+            <ImageView
+                android:id="@+id/img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/index1"/>
 
-
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"/>
             <LinearLayout
-                android:id="@+id/tongji"
+                android:id="@+id/myClass"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,7 +41,7 @@
                     android:paddingBottom="13dp"
                     android:textSize="16sp"
                     android:textColor="#646161"
-                    android:text="@string/tongji"
+                    android:text="我的班级"
                     android:paddingLeft="10dp"/>
             </LinearLayout>
 
@@ -50,34 +49,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="10dp"/>
-            <LinearLayout
-                android:id="@+id/setting"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingLeft="15dp"
-                android:background="@drawable/recycler_item_selector">
 
-                <ImageView
-                    android:id="@+id/icon1"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
-                <TextView
-                    android:id="@+id/text1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="13dp"
-                    android:paddingBottom="13dp"
-                    android:textSize="16sp"
-                    android:textColor="#646161"
-                    android:text="@string/setting"
-                    android:paddingLeft="10dp"/>
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"/>
             <LinearLayout
                 android:id="@+id/guanyu"
                 android:orientation="horizontal"

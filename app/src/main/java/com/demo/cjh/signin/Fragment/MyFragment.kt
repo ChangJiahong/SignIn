@@ -46,66 +46,21 @@ class MyFragment : Fragment(), View.OnClickListener {
 
     private fun init() {
 
-        val sp = App.app.sp
-        if(sp.getBoolean("isLogin",false)) {
-            // 登陆成功的初始化
-            val name = sp.getString("name", "登陆/注册")
-            if (!name.isNullOrEmpty()) {
-                id_my_text.text = name
-            }
-            val img = sp.getString("img","")
-            Log.v(TAG,"imgUrl= $img")
-            if(!img.isNullOrEmpty()) {
-                Glide.with(context).load(img).into(id_my_icon)
-            }
-
-        }
-        setting.setOnClickListener(this)
-        tongji.setOnClickListener(this)
+        myClass.setOnClickListener(this)
         guanyu.setOnClickListener(this)
         bangzhu.setOnClickListener(this)
-        id_my_text1.setOnClickListener(this)
-        id_my_text2.setOnClickListener(this)
-        id_my_text3.setOnClickListener(this)
-        login.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.setting ->{
-                startActivity<SettingsActivity>()
-            }
-            R.id.tongji ->{
-                startActivity<StatisticsActivity>()
-            }
             R.id.guanyu ->{
                 startActivity<AboutMe>()
             }
             R.id.bangzhu ->{
                 startActivity<HelpActivity>()
             }
-            R.id.id_my_text1 ->{
+            R.id.myClass ->{
                 startActivity<MyClass>()
-            }
-            R.id.id_my_text2 ->{
-                startActivity<YunActivity>()
-            }
-            R.id.id_my_text3 ->{
-                toast("功能尚未开放，尽请期待！")
-            }
-            R.id.login ->{
-                if(!App.app.sp.getBoolean("isLogin",false)) {
-                    // 未登录
-                    val intent = Intent(activity, LoginActivity::class.java)
-
-                    startActivityForResult(intent, 1)
-                }else{
-                    // 已登录
-                    val intent = Intent(activity, UserInfo::class.java)
-
-                    startActivityForResult(intent, 1)
-
-                }
             }
         }
     }
@@ -117,35 +72,11 @@ class MyFragment : Fragment(), View.OnClickListener {
         if(resultCode == Activity.RESULT_OK){
             if(requestCode == 1){
                 // 回调刷新
-                var sp = App.app.sp
-                Log.v(TAG,sp.getString("name","1111111111"))
-                if(sp.getBoolean("isLogin",false)) {
-                    var name = sp.getString("name", "登陆")
-                    var img = sp.getString("img", "")
-                    Glide.with(context).load(img).into(id_my_icon)
-                    id_my_text.text = name
-                }else{
-                    id_my_text.text = "登录/注册"
-                    id_my_icon.setImageResource(R.drawable.tou)
-                }
+
             }
         }
     }
 
 
-
-    companion object {
-
-        private var fragment: MyFragment? = null
-
-        @JvmStatic
-        fun getInstance(): MyFragment {
-
-            if (fragment == null) {
-                fragment = MyFragment()
-            }
-            return fragment!!
-        }
-    }
 
 }
