@@ -2,6 +2,9 @@ package com.demo.cjh.signin
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
+import com.demo.cjh.signin.util.HttpHelper
+import com.demo.cjh.signin.util.doHttp
 
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -14,6 +14,8 @@ import android.view.inputmethod.InputMethodManager
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
 import com.demo.cjh.signin.util.Http.upName
+import com.demo.cjh.signin.util.HttpHelper
+import com.demo.cjh.signin.util.doHttp
 import com.demo.cjh.signin.util.getreslut
 import kotlinx.android.synthetic.main.activity_up_name.*
 import org.jetbrains.anko.alert
@@ -29,7 +31,7 @@ class UpName : AppCompatActivity() {
 
 
     var flag = false
-    val sp = App.app!!.sp!!
+    val sp = App.app.sp
 
 
     override fun onStart() {
@@ -43,7 +45,7 @@ class UpName : AppCompatActivity() {
 
 
 
-        name.setText(App.app!!.user.name)
+        name.setText(App.app.user.name)
 
         name.addTextChangedListener(object : TextWatcher{
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -69,7 +71,7 @@ class UpName : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         Log.v("UpName","menu onClick ${item!!.itemId}")
-        when(item!!.itemId){
+        when(item.itemId){
             R.id.save ->{
                 if(flag) {
                     save()
@@ -103,30 +105,32 @@ class UpName : AppCompatActivity() {
         }
         progressView.visibility = View.VISIBLE
 
-        doAsync {
-            var resultString = upName(name.text.toString())
 
-            uiThread {
+        doHttp {
+            url = HttpHelper.alterName
+            params {
+                "name"-name.text.toString()
+            }
+            success { status, msg, data ->
                 progressView.visibility = View.GONE
-                var result = getreslut(resultString)
-                if(result.status == 1) {
+                if (status == 200){
                     toast("修改成功")
-
-                    val jsonObject = JSONObject(result.data)
-
                     sp.edit().apply{
-                        putString("name",jsonObject.getString("name"))
-                        putString("userToken",jsonObject.getString("userToken"))
+                        putString("name",name.text.toString())
                         apply()
                     }
-
                     setResult(Activity.RESULT_OK)
                     finish()
                 }else{
-                    toast(result.msg)
+                    toast(msg)
                 }
             }
-        }
+            error {
+                progressView.visibility = View.GONE
+                toast("修改失败$it")
+            }
+        }.start()
+
     }
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if(keyCode == KeyEvent.KEYCODE_BACK && flag){

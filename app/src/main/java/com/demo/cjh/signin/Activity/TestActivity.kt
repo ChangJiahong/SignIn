@@ -15,9 +15,9 @@ import com.bin.david.form.data.format.draw.ImageResDrawFormat
 import com.bin.david.form.data.table.TableData
 import com.bin.david.form.utils.DensityUtils
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.GPAItem
-import com.demo.cjh.signin.obj.StuSignInList
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.pojo.GPAItem
+import com.demo.cjh.signin.pojo.StuSignInList
+import com.demo.cjh.signin.pojo.StudentInfo
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.getNow
 import kotlinx.android.synthetic.main.activity_gpa.*

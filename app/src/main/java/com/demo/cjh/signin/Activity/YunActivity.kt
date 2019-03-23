@@ -104,8 +104,8 @@ class YunActivity : AppCompatActivity(), View.OnClickListener {
                     // 解析数据
                     val result = getreslut(resultString)
                     if(result.status == 1){
-                        val data = result.data
-                        var jsonObject = JSONObject(data)
+                        val data = result.data as JSONObject
+                        var jsonObject = data
                         val classInfoArray = jsonObject.getJSONArray("classInfos")
                         val stuInfoArray = jsonObject.getJSONArray("stuInfos")
                         val signInListArray = jsonObject.getJSONArray("signInList")

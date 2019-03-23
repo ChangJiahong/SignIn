@@ -13,10 +13,8 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.demo.cjh.signin.App
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.util.Http
-import com.demo.cjh.signin.util.PhotoUtil
+import com.demo.cjh.signin.util.*
 import com.demo.cjh.signin.util.PhotoUtil.IMAGE_UNSPECIFIED
-import com.demo.cjh.signin.util.getreslut
 import kotlinx.android.synthetic.main.activity_table2_item.view.*
 import kotlinx.android.synthetic.main.activity_user_info.*
 import kotlinx.android.synthetic.main.list_my_item.*
@@ -31,13 +29,13 @@ import java.io.File
 
 class UserInfo : AppCompatActivity() , View.OnClickListener{
 
-    val sp = App.app!!.sp!!
+    val sp = App.app.sp
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
 
-        setTitle("个人信息")
+        title = "个人信息"
 
 
         init()
@@ -51,9 +49,10 @@ class UserInfo : AppCompatActivity() , View.OnClickListener{
         pwd.setOnClickListener(this)
         exit.setOnClickListener(this)
 
-        val imgUrl = sp.getString("imgUrl","")
-        val uid = sp.getString("userid","")
+        val imgUrl = sp.getString("img","")
+        val uid = sp.getString("userId","")
         val uname = sp.getString("name","")
+        Log.d("img",imgUrl)
 
 
         Glide.with(applicationContext).load(imgUrl).into(user_image)
@@ -90,7 +89,7 @@ class UserInfo : AppCompatActivity() , View.OnClickListener{
                     putBoolean("isLogin",false)
                     putString("pwd","")
                     putString("userToken","")
-                    putString("imgUrl","")
+                    putString("img","")
                     putString("name","")
                     apply()
                 }
@@ -130,14 +129,9 @@ class UserInfo : AppCompatActivity() , View.OnClickListener{
                 1 ->{
                     // 打开相册注册
                     val uri = data!!.data
-//                var path = ""
-//                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {//4.4以后
-//                    path = FileUtil.getPath(this, uri) ?:""
-//                } else {//4.4以下下系统调用方法
-//                    path = FileUtil.getRealPathFromURI(this, uri) ?:""
-//                }
 
                     imgpath = PhotoUtil.getPath(this)// 生成一个地址用于存放剪辑后的图片
+
                     if (TextUtils.isEmpty(imgpath)) {
                         Log.e("Login", "随机生成的用于存放剪辑后的图片的地址失败")
                         return
@@ -147,51 +141,36 @@ class UserInfo : AppCompatActivity() , View.OnClickListener{
                 }
 
 
-                3 ->{
+                3 -> {
                     // 裁剪图片处理结果
 
-                    doAsync {
-                        var resultString =  Http.upImg(imgpath)
-                        var result = getreslut(resultString)
-                        if(result.status == 1){
-                            // 修改成功
-                            // 更新imgUrl
-
-                            val jsonObject = JSONObject(result.data)
-
-                            sp.edit().apply{
-                                putString("imgUrl",jsonObject.getString("imgUrl"))
-                                putString("userToken",jsonObject.getString("userToken"))
-                                apply()
-                            }
-
-                            uiThread {
-                                /**
-                                 * 如，根据path获取剪辑后的图片
-                                 */
-                                val bitmap = PhotoUtil.convertToBitmap(imgpath, PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH)
-                                if (bitmap != null) {
-                                    //tv2.setText(bitmap.getHeight()+"x"+bitmap.getWidth()+"图");
-                                    user_image.setImageBitmap(bitmap)
-                                    //Glide.with(context).load(img).into(id_my_icon)
+                    // 上传图片
+                    doHttp {
+                        url = HttpHelper.upUserImg
+                        files = arrayListOf(imgpath)
+                        success { status, msg, data ->
+                            if (status == 200) {
+                                val img = data.toString()
+                                sp.edit().apply {
+                                    putString("img", img)
+                                    apply()
                                 }
-
-                                toast("修改成功")
-
+                                //val bitmap = PhotoUtil.convertToBitmap(imgpath, PhotoUtil.PICTURE_HEIGHT, PhotoUtil.PICTURE_WIDTH)
+                                if (img.isNotEmpty()) {
+                                    //tv2.setText(bitmap.getHeight()+"x"+bitmap.getWidth()+"图");
+                                    //user_image.setImageBitmap(bitmap)
+                                    Glide.with(this@UserInfo).load(img).into(user_image)
+                                }
+                            } else {
+                                toast("修改失败")
                             }
-                        }else{
-                            // 不成功
-                            uiThread {
-                                toast(result.msg)
-                            }
-
                         }
-                    }
+                    }.upload()
                 }
 
                 2 ->{
                     // 更改用户名
-                    name.text = App.app!!.user.name
+                    name.text = App.app.user.name
                 }
             }
 

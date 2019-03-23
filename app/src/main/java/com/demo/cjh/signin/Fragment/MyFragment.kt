@@ -46,14 +46,14 @@ class MyFragment : Fragment(), View.OnClickListener {
 
     private fun init() {
 
-        val sp = App.app!!.sp!!
+        val sp = App.app.sp
         if(sp.getBoolean("isLogin",false)) {
             // 登陆成功的初始化
             val name = sp.getString("name", "登陆/注册")
             if (!name.isNullOrEmpty()) {
                 id_my_text.text = name
             }
-            val img = sp.getString("imgUrl","")
+            val img = sp.getString("img","")
             Log.v(TAG,"imgUrl= $img")
             if(!img.isNullOrEmpty()) {
                 Glide.with(context).load(img).into(id_my_icon)
@@ -94,14 +94,14 @@ class MyFragment : Fragment(), View.OnClickListener {
                 toast("功能尚未开放，尽请期待！")
             }
             R.id.login ->{
-                if(!App.app!!.sp!!.getBoolean("isLogin",false)) {
+                if(!App.app.sp.getBoolean("isLogin",false)) {
                     // 未登录
-                    var intent = Intent(activity, LoginActivity::class.java)
+                    val intent = Intent(activity, LoginActivity::class.java)
 
                     startActivityForResult(intent, 1)
                 }else{
                     // 已登录
-                    var intent = Intent(activity, UserInfo::class.java)
+                    val intent = Intent(activity, UserInfo::class.java)
 
                     startActivityForResult(intent, 1)
 
@@ -117,11 +117,11 @@ class MyFragment : Fragment(), View.OnClickListener {
         if(resultCode == Activity.RESULT_OK){
             if(requestCode == 1){
                 // 回调刷新
-                var sp = App.app!!.sp!!
+                var sp = App.app.sp
                 Log.v(TAG,sp.getString("name","1111111111"))
                 if(sp.getBoolean("isLogin",false)) {
                     var name = sp.getString("name", "登陆")
-                    var img = sp.getString("imgUrl", "")
+                    var img = sp.getString("img", "")
                     Glide.with(context).load(img).into(id_my_icon)
                     id_my_text.text = name
                 }else{

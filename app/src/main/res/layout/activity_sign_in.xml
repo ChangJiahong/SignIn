@@ -95,45 +95,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center">
-                <Button
-                    android:id="@+id/chiDao"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="80dp"
-                    android:background="@drawable/hua1"
-                    android:text="迟到" />
+                <com.demo.cjh.signin.View.FlexBoxRadioGroup
+                    android:id="@+id/radioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="center">
 
-                <Button
-                    android:id="@+id/kuangKe"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="80dp"
-                    android:background="@drawable/hua1"
-                    android:text="旷课" />
 
-                <Button
-                    android:id="@+id/dao"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="80dp"
-                    android:background="@drawable/hua1"
-                    android:text="到" />
+                </com.demo.cjh.signin.View.FlexBoxRadioGroup>
 
-                <Button
-                    android:id="@+id/shiJia"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="80dp"
-                    android:background="@drawable/hua1"
-                    android:text="事假"/>
-
-                <Button
-                    android:id="@+id/bingJia"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="80dp"
-                    android:background="@drawable/hua1"
-                    android:text="病假" />
             </LinearLayout>
 
         </LinearLayout>

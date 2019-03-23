@@ -7,20 +7,36 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.RemoteViewsService
 import android.widget.TextView
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.pojo.Stu
+import com.demo.cjh.signin.pojo.StudentInfo
+import com.demo.cjh.signin.service.IStuService
+import com.demo.cjh.signin.service.impl.StuServiceImpl
 import com.demo.cjh.signin.util.database
 import kotlinx.android.synthetic.main.activity_stu_list2.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.uiThread
 
+/**
+ * 学生列表界面
+ */
 class StuList : AppCompatActivity() {
 
-    var stuData = ArrayList<StudentInfo>()
-    var classId: String? = null
-    lateinit var adapter: StuAdapter
+    private var stuData = ArrayList<Stu>()
+
+    private lateinit var classId: String
+    private lateinit var className: String
+    /**
+     * adapter 学生
+     */
+    private lateinit var adapter: StuAdapter
+
+    private lateinit var stuService: IStuService
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,38 +48,55 @@ class StuList : AppCompatActivity() {
 
     private fun init() {
         classId = intent.getStringExtra("classId")
-        var className = intent.getStringExtra("name")
+        className = intent.getStringExtra("name")
+        // 设置标题
         title = className
-        adapter = StuAdapter(this,stuData)
+
+
+        stuService = StuServiceImpl(this)
+
+
+        initView()
+
+        initData()
+
+
+    }
+
+    /**
+     * 加载view
+     */
+    private fun initView() {
+        adapter = StuAdapter(this, stuData)
 
         mListView.emptyView = empty_view
         mListView.adapter = adapter
         mListView.setOnItemClickListener { parent, view, position, id ->
             // 学生信息
-            val stuId = stuData[position].stuId
-            val name = stuData[position].name
-            startActivity<StuInfoActivity>("classId" to classId,"className" to className,"stuId" to stuId,"name" to name)
+            val stu = stuData[position]
+            startActivity<StuInfoActivity>("classId" to classId, "className" to className, "stu" to stu)
 
         }
+    }
 
+    /**
+     * 加载数据
+     */
+    private fun initData() {
         doAsync {
             stuData.clear()
+            stuData.addAll(stuService.getStusByClassId(classId)) // 查找学生名单
 
-            stuData.addAll(database.query_stuInfo_by_classId(classId!!)) // 查找学生名单
-
-            runOnUiThread {
+            uiThread {
                 adapter.notifyDataSetChanged()
             }
         }
-
-
     }
 
 
-    class StuAdapter(context: Context, data: ArrayList<StudentInfo>) : BaseAdapter(){
+    class StuAdapter(context: Context, private var data: ArrayList<Stu>) : BaseAdapter(){
 
         private var inflater: LayoutInflater = LayoutInflater.from(context)
-        private var data: ArrayList<StudentInfo> = data
 
 
         override fun getItem(position: Int): Any {
@@ -90,7 +123,7 @@ class StuList : AppCompatActivity() {
                 v = convertView
                 holder = v.tag as Holder
             }
-            holder.name.text = data[position].name
+            holder.name.text = data[position].stuName
             holder.stuId.text = data[position].stuId
 
             return v

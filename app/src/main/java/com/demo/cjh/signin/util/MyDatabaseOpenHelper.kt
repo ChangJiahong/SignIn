@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.arcsoft.facerecognition.AFR_FSDKFace
-import com.demo.cjh.signin.obj.*
+import com.demo.cjh.signin.pojo.*
 import kotlin.collections.ArrayList
 
 /**
@@ -94,6 +94,31 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
             }
             return instence!!
         }
+
+//        // 写 数据库 线程对象
+        private val wtol = ThreadLocal<SQLiteDatabase>()
+
+        // 读 数据库 线程对象
+        private val rtol = ThreadLocal<SQLiteDatabase>()
+
+        fun writeDb(context: Context): SQLiteDatabase {
+            var db = wtol.get()
+            if(db == null || !db.isOpen) {
+                db = MyDatabaseOpenHelper(context).writableDatabase
+                wtol.set(db)
+            }
+            return db
+        }
+
+        fun readDb(context: Context): SQLiteDatabase {
+            var db = rtol.get()
+            if(db == null || !db.isOpen) {
+                db = MyDatabaseOpenHelper(context).readableDatabase
+                rtol.set(db)
+            }
+            return db
+        }
+
     }
     /**
      * 更新数据库
@@ -110,24 +135,38 @@ class MyDatabaseOpenHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME
     override fun onCreate(db: SQLiteDatabase?) {
 
         Log.d(TAG,"createDB ${DB_NAME} ,loading...！")
-        var stu_sql = "CREATE TABLE IF NOT EXISTS ${STUINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,name VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,face1 BLOB,face2 BLOB,face3 BLOB);"
-        var class_sql = "CREATE TABLE IF NOT EXISTS ${CLASSINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,className VARCHAR(50) NOT NULL,info TEXT,time VARCHAR NOT NULL);"
-        var stu_info = "CREATE TABLE IF NOT EXISTS ${STUSIGNININFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
-        var stu_list = "CREATE TABLE IF NOT EXISTS ${STUSIGNINLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
-        var gpa_list = "CREATE TABLE IF NOT EXISTS ${GPALIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
-        var gpa_info = "CREATE TABLE IF NOT EXISTS ${GPAINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
-        var test_list = "CREATE TABLE IF NOT EXISTS ${TESTLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
-        var test_info = "CREATE TABLE IF NOT EXISTS ${TESTINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+//
+//        var stu_sql = "CREATE TABLE IF NOT EXISTS ${STUINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,name VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,face1 BLOB,face2 BLOB,face3 BLOB);"
+//        var class_sql = "CREATE TABLE IF NOT EXISTS ${CLASSINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,className VARCHAR(50) NOT NULL,info TEXT,time VARCHAR NOT NULL);"
+//        var stu_info = "CREATE TABLE IF NOT EXISTS ${STUSIGNININFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+//        var stu_list = "CREATE TABLE IF NOT EXISTS ${STUSIGNINLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+//        var gpa_list = "CREATE TABLE IF NOT EXISTS ${GPALIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+//        var gpa_info = "CREATE TABLE IF NOT EXISTS ${GPAINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+//        var test_list = "CREATE TABLE IF NOT EXISTS ${TESTLIST} (id INTEGER PRIMARY KEY AUTOINCREMENT,classId VARCHAR(50) NOT NULL,time VARCHAR NOT NULL,num INT NOT NULL,info VARCHAR(50) NOT NULL);"
+//        var test_info = "CREATE TABLE IF NOT EXISTS ${TESTINFO} (id INTEGER PRIMARY KEY AUTOINCREMENT,stuId VARCHAR(50) NOT NULL,classId VARCHAR(50) NOT NULL,type VARCHAR(20) NOT NULL,no VARCHAR(50) NOT NULL);"
+
+//        db!!.execSQL(stu_sql)
+//        db.execSQL(class_sql)
+//        db.execSQL(stu_info)
+//        db.execSQL(stu_list)
+//        db.execSQL(gpa_info)
+//        db.execSQL(gpa_list)
+//        db.execSQL(test_info)
+//        db.execSQL(test_list)
 
 
-        db!!.execSQL(stu_sql)
-        db.execSQL(class_sql)
-        db.execSQL(stu_info)
-        db.execSQL(stu_list)
-        db.execSQL(gpa_info)
-        db.execSQL(gpa_list)
-        db.execSQL(test_info)
-        db.execSQL(test_list)
+        db!!.apply {
+            execSQL(SqlString.stu)
+            execSQL(SqlString.classes)
+            execSQL(SqlString.record)
+            execSQL(SqlString.subject)
+            execSQL(SqlString.type)
+            execSQL(SqlString.typeKey)
+            execSQL(SqlString.facesData)
+            //execSQL(SqlString.typeInit)
+            //execSQL(SqlString.typeKeyInit)
+        }
+
 
         Log.d(TAG,"createDB ${DB_NAME} successful！")
 

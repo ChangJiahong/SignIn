@@ -13,8 +13,8 @@ import android.view.*
 import android.widget.*
 import com.demo.cjh.signin.*
 import com.demo.cjh.signin.Adapter.StuAdapter
-import com.demo.cjh.signin.obj.StuSignInList
-import com.demo.cjh.signin.obj.StudentInfo
+import com.demo.cjh.signin.pojo.StuSignInList
+import com.demo.cjh.signin.pojo.StudentInfo
 import com.demo.cjh.signin.util.database
 import com.demo.cjh.signin.util.getNow
 import kotlinx.android.synthetic.main.activity_stu_list.*
@@ -45,7 +45,7 @@ class StuListActivity : AppCompatActivity() {
      * 1 -> 可以修改，不可点名
      * 2 -> 不可修改，不可点名
      */
-    var type = 0
+    var action = 0
 
     /**
      * 签到标志
@@ -60,12 +60,12 @@ class StuListActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        type = intent.getIntExtra("type",0)
+        action = intent.getIntExtra("action",0)
         classId = intent.getStringExtra("classId")
         var className = intent.getStringExtra("className")
 
         var no = ""
-        if(type != 0)
+        if(action != 0)
             no = intent.getStringExtra("no")
 
         class_name.text = className
@@ -73,7 +73,7 @@ class StuListActivity : AppCompatActivity() {
 
         stu_list.addItemDecoration(DividerItemDecoration(this,DividerItemDecoration.VERTICAL))
         stu_list.adapter = StuAdapter(stuData){position ->
-            if(type != 2) {
+            if(action != 2) {
                 flag = true
                 signIn = false
                 val intent = Intent(this@StuListActivity, SignInActivity::class.java)
@@ -88,12 +88,12 @@ class StuListActivity : AppCompatActivity() {
 
         doAsync {
             stuData.clear()
-            if(type == 0) {
+            if(action == 0) {
                 stuData.addAll(database.query_stuInfo_by_classId(classId!!)) // 查找学生名单
                 // 初始化人脸库
-                App.mFaceDB.mRegister.clear()
-                App.mFaceDB.loadFaces(classId!!)
-                Log.v(TAG,"face Size:"+App.mFaceDB.mRegister.size)
+                //App.getFaceDB()!!.mRegister.clear()
+                //App.getFaceDB()!!.loadFaces(classId!!)
+                //Log.v(TAG,"face Size:"+App.getFaceDB()!!.mRegister.size)
             }else{
                 Log.v(TAG,"no:"+no)
                 var data = database.query_signInInfo_by_classId_and_no(classId!!,no)
@@ -166,7 +166,7 @@ class StuListActivity : AppCompatActivity() {
                 }else {
                     message = "是否保存"
                 }
-                if(type == 0){
+                if(action == 0){
                     this.customView = dialogView
                 }
                 positiveButton("是"){
@@ -181,7 +181,7 @@ class StuListActivity : AppCompatActivity() {
                     }
                     mProgressDialog.show()
                     doAsync {
-                        when(type) {
+                        when(action) {
                             0 -> {// 新建记录
                                 // 保存操作
                                 // 1. 插入考勤记录表记录
@@ -236,7 +236,7 @@ class StuListActivity : AppCompatActivity() {
         return super.onKeyDown(keyCode, event)
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        if(type == 0)
+        if(action == 0)
             menuInflater.inflate(R.menu.dian_ming,menu)
         return true
     }
@@ -260,21 +260,21 @@ class StuListActivity : AppCompatActivity() {
 
                 // 人脸识别
                 // 判断是否存在人脸
-                if(App.mFaceDB.mRegister.isEmpty()) {
-                    // 显示为空
-                    showDialog("暂无学生人脸数据，请先录入")
-                }else{
-                    AlertDialog.Builder(this@StuListActivity)
-                            .setTitle("请选择相机")
-                            .setItems(arrayOf("后置相机", "前置相机")) { dialog, which ->
-
-                                val it = Intent(this@StuListActivity, SignInByFace::class.java)
-                                it.putExtra("Camera", which)
-                                startActivityForResult(it, REQUEST_CODE_OP)
-                            }
-                            .show()
-
-                }
+//                if(App.mFaceDB.mRegister.isEmpty()) {
+//                    // 显示为空
+//                    showDialog("暂无学生人脸数据，请先录入")
+//                }else{
+//                    AlertDialog.Builder(this@StuListActivity)
+//                            .setTitle("请选择相机")
+//                            .setItems(arrayOf("后置相机", "前置相机")) { dialog, which ->
+//
+//                                val it = Intent(this@StuListActivity, SignInByFace::class.java)
+//                                it.putExtra("Camera", which)
+//                                startActivityForResult(it, REQUEST_CODE_OP)
+//                            }
+//                            .show()
+//
+//                }
 
             }
         }
@@ -330,7 +330,7 @@ class StuListActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         // 清空脸库
-        App.mFaceDB.mRegister.clear()
+        //App.mFaceDB.mRegister.clear()
         Log.v(TAG,"清空脸库")
     }
 

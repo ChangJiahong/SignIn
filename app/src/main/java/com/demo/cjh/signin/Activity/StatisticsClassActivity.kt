@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.daivd.chart.component.base.IAxis
-import com.daivd.chart.component.base.IChartTitle
 import com.daivd.chart.component.base.IComponent
 import com.daivd.chart.core.LineChart
 import com.daivd.chart.data.BarData
@@ -18,12 +16,11 @@ import com.daivd.chart.provider.component.cross.VerticalCross
 import com.daivd.chart.provider.component.mark.IMark
 import com.daivd.chart.provider.component.point.LegendPoint
 import com.daivd.chart.provider.component.point.Point
-import com.daivd.chart.provider.component.tip.MultiLineBubbleTip
 import com.daivd.chart.provider.component.tip.SingleLineBubbleTip
 import com.daivd.chart.utils.DensityUtils
 import com.daivd.chart.utils.DrawUtils
 import com.demo.cjh.signin.R
-import com.demo.cjh.signin.obj.CqInfo
+import com.demo.cjh.signin.pojo.CqInfo
 import kotlinx.android.synthetic.main.activity_statistics_class.*
 import java.util.ArrayList
 

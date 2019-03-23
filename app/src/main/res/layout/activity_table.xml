@@ -6,29 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".Activity.TableActivity">
 
-    <LinearLayout
+
+
+
+    <com.bin.david.form.core.SmartTable
+        android:id="@+id/table"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/table_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="26dp"
-            android:text="name"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/defult"/>
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/mTableList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="android.support.v7.widget.LinearLayoutManager"></android.support.v7.widget.RecyclerView>
-    </LinearLayout>
-    
+        android:layout_height="match_parent" />
+
+
+
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
